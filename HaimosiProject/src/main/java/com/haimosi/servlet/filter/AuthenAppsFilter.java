@@ -47,6 +47,7 @@ public class AuthenAppsFilter implements Filter {
 		AuthenAppsFilter.listAllowReq.add("api/v1.0/apps/account/forgetpassword");
 		AuthenAppsFilter.listAllowReq.add("api/v1.0/apps/account/resetpassword");
 		AuthenAppsFilter.listAllowReq.add("api/v1.0/apps/account/activate");
+		AuthenAppsFilter.listAllowReq.add("api/v1.0/apps/item/list");
 
 	}
 

@@ -71,8 +71,7 @@ public class TransactionController_v1_0 {
 	@Path("/create")
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
-	public String create(@FormParam(ParamDefine.ITEM_ID) IntegerParam idItem, @FormParam(ParamDefine.QUANTITY) FloatParam quantity,
-			@FormParam(ParamDefine.METHOD) ByteParam method) {
+	public String create(@FormParam(ParamDefine.ITEM_ID) IntegerParam idItem, @FormParam(ParamDefine.QUANTITY) FloatParam quantity) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 		try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool);
@@ -80,43 +79,41 @@ public class TransactionController_v1_0 {
 				RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
 
 			JsonObject jsonResponse = new JsonObject();
-			if (method.getValue().equals(Constant.PAYMENT_APP) || method.getValue().equals(Constant.PAYMENT_CASH)) {
-				ItemPOJO item = itemDAO.get(session, idItem.getValue());
-				if (item != null) {
-					float amount = quantity.getValue() * item.getPrice();
-					Date date = new Date();
-					TransactionPOJO trans = new TransactionPOJO(null, user, item, quantity.getValue(), amount, method.getValue(), date,
-							Constant.TRANS_WAIT, null);
-					Integer id = transDAO.saveID(session, trans);
-					HibernateUtil.commitTransaction(session);
+			ItemPOJO item = itemDAO.get(session, idItem.getValue());
+			if (item != null) {
+				float amount = quantity.getValue() * item.getPrice();
+				Date date = new Date();
+				TransactionPOJO trans = new TransactionPOJO(null, user, item, quantity.getValue(), amount, Constant.PAYMENT_UNCHOOSE, date,
+						Constant.TRANS_WAIT, null);
+				Integer id = transDAO.saveID(session, trans);
+				HibernateUtil.commitTransaction(session);
 
-					jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
+				jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 
-					// Push this transaction to admin through websocket
-					MessagePushTransaction push = new MessagePushTransaction();
-					push.setCommand(Constant.SOCKET_COMMAND_PUSH_TRANS);
-					TransactionContent content = new TransactionContent(id, quantity.getValue(), amount, date);
-					push.setContent(content);
-
-					RolePOJO adminRole = roleDAO.get(session, Constant.USER_ROLE_ADMIN);
-					Set<UserPOJO> admins = adminRole.getUsers();
-					for (UserPOJO admin : admins) {
-						WSEndpoint adminSocket = WSEndpoint._clientSessionMap.get(admin.getIdUser());
-						if (adminSocket != null) {
-							try {
-								adminSocket.echoMessage(push);
-							}
-							catch (Exception e) {
-								e.printStackTrace();
-							}
-
+				// Push this transaction to admin through websocket
+				MessagePushTransaction push = new MessagePushTransaction();
+				push.setCommand(Constant.SOCKET_COMMAND_PUSH_TRANS);
+				TransactionContent content = new TransactionContent(id, quantity.getValue(), amount, date);
+				push.setContent(content);
+				RolePOJO adminRole = roleDAO.get(session, Constant.USER_ROLE_ADMIN);
+				Set<UserPOJO> admins = adminRole.getUsers();
+				for (UserPOJO admin : admins) {
+					WSEndpoint adminSocket = WSEndpoint._clientSessionMap.get(admin.getIdUser());
+					if (adminSocket != null) {
+						try {
+							adminSocket.echoMessage(push);
 						}
-					}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
 
+					}
 				}
-				else {
-					jsonResponse.add(ParamDefine.RESULT, StatusCode.BAD_PARAM.printStatus());
-				}
+				content = null;
+				push = null;
+				adminRole = null;
+				admins = null;
+
 			}
 			else {
 				jsonResponse.add(ParamDefine.RESULT, StatusCode.BAD_PARAM.printStatus());
