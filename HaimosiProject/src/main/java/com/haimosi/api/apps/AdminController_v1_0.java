@@ -59,6 +59,9 @@ import com.haimosi.param.IntegerParam;
 import com.haimosi.param.ParamDefine;
 import com.haimosi.param.StringNotEmptyParam;
 import com.haimosi.util.Helper;
+import com.haimosi.websocket.data.MessageConfirmTransaction;
+import com.haimosi.websocket.data.TransConfirmContent;
+import com.haimosi.websocket.endpoint.WSEndpoint;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 
@@ -960,7 +963,7 @@ public class AdminController_v1_0 {
 		Integer idTrans = Integer.valueOf(idTransPart.getValue());
 
 		try (InputStream fileStream = fileBody.getValueAs(InputStream.class);
-				TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool)) {
+				TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);) {
 			JsonObject jsonResponse = new JsonObject();
 
 			byte[] bytes = IOUtils.toByteArray(fileStream);
@@ -986,11 +989,31 @@ public class AdminController_v1_0 {
 					TransactionPOJO trans = transDAO.get(session, idTrans);
 					if (trans != null) {
 						trans.setPhoto(nameTrans);
-						transDAO.saveOrUpdate(session, trans);
+						transDAO.update(session, trans);
 						HibernateUtil.commitTransaction(session);
 
 						jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 
+						// Push this photo url to USER
+						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
+								+ this.httpRequest.getContextPath() + "/resource/transaction/" + nameTrans;
+
+						TransConfirmContent content = new TransConfirmContent(idTrans, photoUrl);
+						MessageConfirmTransaction message = new MessageConfirmTransaction();
+						message.setCommand(Constant.SOCKET_COMMAND_CONFIRM_TRANS);
+						message.setContent(content);
+						WSEndpoint userSocket = WSEndpoint._clientSessionMap.get(trans.getUser().getIdUser());
+						if (userSocket != null) {
+							try {
+								userSocket.echoMessage(message);
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+							}
+
+						}
+						content = null;
+						message = null;
 						directoryTrans = null;
 						fileTrans = null;
 						nameTrans = null;
