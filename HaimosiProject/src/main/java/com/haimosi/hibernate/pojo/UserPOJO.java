@@ -20,6 +20,7 @@ import javax.persistence.Table;
 
 import logia.utility.json.annotaion.JsonKey;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -148,6 +149,26 @@ public class UserPOJO implements Serializable {
 		return this.likes.add(item);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj != null && obj instanceof UserPOJO) {
+			UserPOJO compareUser = (UserPOJO) obj;
+			EqualsBuilder builder = new EqualsBuilder();
+			builder.append(this.getStatus(), compareUser.getStatus()).append(this.getEmail(), compareUser.getEmail())
+			.append(this.getFirstName(), compareUser.getFirstName()).append(this.getIdUser(), compareUser.getIdUser())
+			.append(this.getLastName(), compareUser.getLastName()).append(this.getPassword(), compareUser.getPassword());
+			return builder.isEquals();
+		}
+		else {
+			return false;
+		}
+	}
+
 	/**
 	 * Gets the avatar.
 	 *
@@ -273,8 +294,8 @@ public class UserPOJO implements Serializable {
 	@Override
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder(17, 31);
-		builder.append(this.status).append(this.avatar).append(this.email).append(this.firstName).append(this.idUser).append(this.lastName)
-		.append(this.password).append(this.phone);
+		builder.append(this.getStatus()).append(this.getEmail()).append(this.getFirstName()).append(this.getIdUser()).append(this.getLastName())
+		.append(this.getPassword()).append(this.getPassword()).append(this.getPhone());
 		return builder.toHashCode();
 	}
 

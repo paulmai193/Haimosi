@@ -60,7 +60,54 @@ public class TransactionController_v1_0 {
 	HttpServletRequest httpRequest;
 
 	/**
-	 * Creates the.
+	 * Accept the transaction.
+	 *
+	 * @param idTrans the id trans
+	 * @param method the method
+	 * @return the string
+	 */
+	@POST
+	@Path("/accept")
+	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
+	@Produces(value = { MediaType.APPLICATION_JSON })
+	public String accept(@FormParam(ParamDefine.TRANSACTION_ID) IntegerParam idTrans, @FormParam(ParamDefine.METHOD) ByteParam method) {
+		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
+		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
+		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);) {
+
+			JsonObject jsonResponse = new JsonObject();
+
+			TransactionPOJO trans = transDAO.get(session, idTrans.getValue());
+			if (trans != null) {
+				if (trans.getUser().equals(user)) {
+					trans.setMethod(method.getValue());
+					transDAO.update(session, trans);
+					HibernateUtil.commitTransaction(session);
+
+					jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
+				}
+				else {
+					jsonResponse.add(ParamDefine.RESULT, StatusCode.BAD_REQUEST.printStatus("User not the owner of this transaction"));
+				}
+				trans = null;
+			}
+			else {
+				jsonResponse.add(ParamDefine.RESULT,
+						StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
+			}
+
+			return jsonResponse.toString();
+		}
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			HibernateUtil.rollbackTransaction(session);
+			throw new ProcessException(e);
+		}
+	}
+
+	/**
+	 * Creates the transaction.
 	 *
 	 * @param idItem the id item
 	 * @param quantity the quantity
@@ -116,7 +163,7 @@ public class TransactionController_v1_0 {
 
 			}
 			else {
-				jsonResponse.add(ParamDefine.RESULT, StatusCode.BAD_PARAM.printStatus());
+				jsonResponse.add(ParamDefine.RESULT, StatusCode.NO_CONTENT.printStatus("Cannot find item with ID " + idItem.getOriginalParam()));
 			}
 
 			return jsonResponse.toString();
@@ -130,7 +177,7 @@ public class TransactionController_v1_0 {
 	}
 
 	/**
-	 * List.
+	 * List of user's transactions.
 	 *
 	 * @param page the page
 	 * @return the string
