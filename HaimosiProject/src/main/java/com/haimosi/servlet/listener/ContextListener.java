@@ -21,9 +21,10 @@ import org.hibernate.Session;
 
 import com.haimosi.define.Config;
 import com.haimosi.define.Constant;
-import com.haimosi.hibernate.dao.DAOPool;
 import com.haimosi.hibernate.dao.RoleDAO;
 import com.haimosi.hibernate.pojo.RolePOJO;
+import com.haimosi.pool.DAOPool;
+import com.haimosi.pool.ThreadPool;
 
 /**
  * The listener interface for receiving context events. The class that is interested in processing a context event implements this interface, and the
@@ -46,7 +47,7 @@ public class ContextListener implements ServletContextListener {
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent contextEvent) {
-		ThreadPoolFactory.getInstance().release();
+		ThreadPool._threadPool.release();
 		HibernateUtil.releaseFactory();
 		DAOPool.release();
 
@@ -66,7 +67,8 @@ public class ContextListener implements ServletContextListener {
 			/** Load everything of this apps context from here **/
 
 			/* Thread pool */
-			ThreadPoolFactory.getInstance().connect(Config.num_core_thread_in_pool, Config.num_max_thread_in_pool, Config.thread_priority);
+			ThreadPool._threadPool = new ThreadPoolFactory(Config.num_core_thread_in_pool, Config.num_max_thread_in_pool, Config.thread_priority,
+			        true);
 
 			/* Hibernate */
 			HibernateUtil.setConfigPath("hibernate.cfg.xml");

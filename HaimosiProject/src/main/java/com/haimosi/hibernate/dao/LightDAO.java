@@ -3,6 +3,7 @@ package com.haimosi.hibernate.dao;
 import logia.hibernate.dao.AbstractDAO;
 
 import com.haimosi.hibernate.pojo.LightPOJO;
+import com.haimosi.pool.DAOPool;
 
 /**
  * The Class LightDAO.

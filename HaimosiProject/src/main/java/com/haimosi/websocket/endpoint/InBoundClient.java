@@ -22,10 +22,10 @@ import logia.hibernate.dao.AbstractDAO;
 import logia.hibernate.util.HibernateUtil;
 
 import com.haimosi.define.Constant;
-import com.haimosi.hibernate.dao.DAOPool;
 import com.haimosi.hibernate.dao.UserDAO;
 import com.haimosi.hibernate.pojo.UserPOJO;
 import com.haimosi.param.ParamDefine;
+import com.haimosi.pool.DAOPool;
 import com.haimosi.websocket.config.ServerEndpointConfig;
 import com.haimosi.websocket.data.MessageDecoder;
 import com.haimosi.websocket.data.MessageEncoder;

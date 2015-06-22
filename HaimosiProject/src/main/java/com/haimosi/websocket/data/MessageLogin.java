@@ -11,12 +11,12 @@ import com.google.gson.JsonObject;
 import com.haimosi.define.Constant;
 import com.haimosi.define.Result;
 import com.haimosi.define.StatusCode;
-import com.haimosi.hibernate.dao.DAOPool;
 import com.haimosi.hibernate.dao.UserDAO;
 import com.haimosi.hibernate.pojo.UserPOJO;
 import com.haimosi.param.ContactParam;
 import com.haimosi.param.ParamDefine;
 import com.haimosi.param.StringNotEmptyParam;
+import com.haimosi.pool.DAOPool;
 import com.haimosi.websocket.endpoint.WSEndpoint;
 
 /**

@@ -29,7 +29,6 @@ import com.google.gson.JsonObject;
 import com.haimosi.define.Constant;
 import com.haimosi.define.StatusCode;
 import com.haimosi.exception.ProcessException;
-import com.haimosi.hibernate.dao.DAOPool;
 import com.haimosi.hibernate.dao.ItemDAO;
 import com.haimosi.hibernate.dao.RoleDAO;
 import com.haimosi.hibernate.dao.TransactionDAO;
@@ -42,6 +41,7 @@ import com.haimosi.param.FloatParam;
 import com.haimosi.param.IndexParam;
 import com.haimosi.param.IntegerParam;
 import com.haimosi.param.ParamDefine;
+import com.haimosi.pool.DAOPool;
 import com.haimosi.util.Helper;
 import com.haimosi.websocket.data.MessagePushTransaction;
 import com.haimosi.websocket.data.TransactionContent;
@@ -93,7 +93,7 @@ public class TransactionController_v1_0 {
 			}
 			else {
 				jsonResponse.add(ParamDefine.RESULT,
-						StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
+				        StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
 			}
 
 			return jsonResponse.toString();
@@ -122,8 +122,8 @@ public class TransactionController_v1_0 {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 		try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool);
-				TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
-				RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
+		        TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
+		        RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
 
 			JsonObject jsonResponse = new JsonObject();
 			ItemPOJO item = itemDAO.get(session, idItem.getValue());
@@ -131,10 +131,11 @@ public class TransactionController_v1_0 {
 				float amount = quantity.getValue() * item.getPrice();
 				Date date = new Date();
 				TransactionPOJO trans = new TransactionPOJO(null, user, item, quantity.getValue(), amount, Constant.PAYMENT_UNCHOOSE, date,
-						Constant.TRANS_WAIT, null);
+				        Constant.TRANS_WAIT, null);
 				Integer id = transDAO.saveID(session, trans);
 				HibernateUtil.commitTransaction(session);
 
+				jsonResponse.addProperty(ParamDefine.TRANSACTION_ID, id);
 				jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 
 				// Push this transaction to admin through websocket
@@ -233,14 +234,14 @@ public class TransactionController_v1_0 {
 			}
 
 			if (list.size() > 0) {
-				List<TransactionPOJO> tmpList = Helper.sortListByIndex(list, page.getValue(), 4); // Default get 4 items per page
+				List<TransactionPOJO> tmpList = Helper.sortListByIndex(list, page.getValue(), 10); // Default get 10 items per page
 				JsonArray transactions = new JsonArray();
 				for (TransactionPOJO transaction : tmpList) {
 					JsonObject jsonTransaction = JsonTool.toJsonObject(transaction);
 					String photo = transaction.getPhoto();
 					if (photo != null && !photo.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-								+ this.httpRequest.getContextPath() + "/resource/transaction/" + photo;
+						        + this.httpRequest.getContextPath() + "/resource/transaction/" + photo;
 						jsonTransaction.addProperty(ParamDefine.TRANSACTION_PHOTO, photoUrl);
 					}
 					ItemPOJO item = transaction.getItem();

@@ -25,7 +25,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.haimosi.define.StatusCode;
 import com.haimosi.exception.ProcessException;
-import com.haimosi.hibernate.dao.DAOPool;
 import com.haimosi.hibernate.dao.ItemDAO;
 import com.haimosi.hibernate.dao.UserDAO;
 import com.haimosi.hibernate.pojo.ItemPOJO;
@@ -34,6 +33,7 @@ import com.haimosi.param.FloatParam;
 import com.haimosi.param.IndexParam;
 import com.haimosi.param.IntegerParam;
 import com.haimosi.param.ParamDefine;
+import com.haimosi.pool.DAOPool;
 import com.haimosi.util.Helper;
 
 /**
@@ -143,28 +143,24 @@ public class ItemController_v1_0 {
 
 			UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 
-			@SuppressWarnings("unchecked")
-			List<ItemPOJO> list = (List<ItemPOJO>) this.httpRequest.getSession().getAttribute(ParamDefine.ITEMS);
-			if (page.getValue().equals(1) || list == null) {
-				list = itemDAO.getList(session);
-				Collections.sort(list, new Comparator<ItemPOJO>() {
+			List<ItemPOJO> list = itemDAO.getList(session);
+			Collections.sort(list, new Comparator<ItemPOJO>() {
 
-					@Override
-					public int compare(ItemPOJO o1, ItemPOJO o2) {
-						return o1.getIdItem().compareTo(o2.getIdItem());
-					}
-				});
-				this.httpRequest.getSession().setAttribute(ParamDefine.ITEMS, list);
-			}
+				@Override
+				public int compare(ItemPOJO o1, ItemPOJO o2) {
+					return o1.getIdItem().compareTo(o2.getIdItem());
+				}
+			});
+
 			if (list.size() > 0) {
-				list = Helper.sortListByIndex(list, page.getValue(), 4); // Default get 4 items per page
+				list = Helper.sortListByIndex(list, page.getValue(), 10); // Default get 10 items per page
 				JsonArray items = new JsonArray();
 				for (ItemPOJO item : list) {
 					JsonObject jsonItem = JsonTool.toJsonObject(item);
 					String photo = item.getPhoto();
 					if (photo != null && !photo.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-								+ this.httpRequest.getContextPath() + "/resource/item/" + photo;
+						        + this.httpRequest.getContextPath() + "/resource/item/" + photo;
 						jsonItem.addProperty(ParamDefine.ITEM_PHOTO, photoUrl);
 					}
 					jsonItem.addProperty(ParamDefine.ITEM_STATUS_LIKE, item.isLike(user));

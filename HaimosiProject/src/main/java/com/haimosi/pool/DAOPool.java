@@ -1,8 +1,15 @@
-package com.haimosi.hibernate.dao;
+package com.haimosi.pool;
 
 import logia.utility.pool.ObjectPool;
 
 import com.haimosi.define.Config;
+import com.haimosi.hibernate.dao.CreditAccountDAO;
+import com.haimosi.hibernate.dao.ItemDAO;
+import com.haimosi.hibernate.dao.LightDAO;
+import com.haimosi.hibernate.dao.RoleDAO;
+import com.haimosi.hibernate.dao.ScaleDAO;
+import com.haimosi.hibernate.dao.TransactionDAO;
+import com.haimosi.hibernate.dao.UserDAO;
 
 /**
  * The Class DAOPool.

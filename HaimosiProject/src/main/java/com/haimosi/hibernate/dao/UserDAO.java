@@ -6,6 +6,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.haimosi.hibernate.pojo.UserPOJO;
+import com.haimosi.pool.DAOPool;
 
 /**
  * The Class UserDAO.

@@ -3,6 +3,7 @@ package com.haimosi.hibernate.dao;
 import logia.hibernate.dao.AbstractDAO;
 
 import com.haimosi.hibernate.pojo.TransactionPOJO;
+import com.haimosi.pool.DAOPool;
 
 /**
  * The Class TransactionDAO.
