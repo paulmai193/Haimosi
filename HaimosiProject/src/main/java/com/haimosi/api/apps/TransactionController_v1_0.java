@@ -93,7 +93,7 @@ public class TransactionController_v1_0 {
 			}
 			else {
 				jsonResponse.add(ParamDefine.RESULT,
-				        StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
+						StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
 			}
 
 			return jsonResponse.toString();
@@ -122,8 +122,8 @@ public class TransactionController_v1_0 {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 		try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool);
-		        TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
-		        RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
+				TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
+				RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
 
 			JsonObject jsonResponse = new JsonObject();
 			ItemPOJO item = itemDAO.get(session, idItem.getValue());
@@ -131,7 +131,7 @@ public class TransactionController_v1_0 {
 				float amount = quantity.getValue() * item.getPrice();
 				Date date = new Date();
 				TransactionPOJO trans = new TransactionPOJO(null, user, item, quantity.getValue(), amount, Constant.PAYMENT_UNCHOOSE, date,
-				        Constant.TRANS_WAIT, null);
+						Constant.TRANS_WAIT, null);
 				Integer id = transDAO.saveID(session, trans);
 				HibernateUtil.commitTransaction(session);
 
@@ -241,7 +241,7 @@ public class TransactionController_v1_0 {
 					String photo = transaction.getPhoto();
 					if (photo != null && !photo.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-						        + this.httpRequest.getContextPath() + "/resource/transaction/" + photo;
+								+ this.httpRequest.getContextPath() + "/resource/transaction/" + photo;
 						jsonTransaction.addProperty(ParamDefine.TRANSACTION_PHOTO, photoUrl);
 					}
 					ItemPOJO item = transaction.getItem();

@@ -68,7 +68,7 @@ public class ContextListener implements ServletContextListener {
 
 			/* Thread pool */
 			ThreadPool._threadPool = new ThreadPoolFactory(Config.num_core_thread_in_pool, Config.num_max_thread_in_pool, Config.thread_priority,
-			        true);
+					true);
 
 			/* Hibernate */
 			HibernateUtil.setConfigPath("hibernate.cfg.xml");

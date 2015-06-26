@@ -8,16 +8,20 @@ import com.haimosi.param.ParamDefine;
 import com.haimosi.websocket.endpoint.WSEndpoint;
 
 /**
- * The Class MessageUpdateItem.
+ * The Class MessageAcceptTrans.
  * 
  * @author Paul Mai
  */
 @logia.utility.json.annotaion.JsonObject
-public class MessageUpdateItem implements MessageInterface {
+public class MessageAcceptTrans implements MessageInterface {
 
 	/** The command. */
 	@JsonKey(key = ParamDefine.COMMAND)
 	private int command;
+
+	/** The transid. */
+	@JsonKey(key = ParamDefine.TRANSACTION_ID)
+	private int transid;
 
 	/*
 	 * (non-Javadoc)
@@ -37,6 +41,7 @@ public class MessageUpdateItem implements MessageInterface {
 	@Override
 	public void fromJson(JsonObject json) {
 		this.command = json.get(ParamDefine.COMMAND).getAsInt();
+		this.transid = json.get(ParamDefine.TRANSACTION_ID).getAsInt();
 	}
 
 	/*
@@ -59,6 +64,15 @@ public class MessageUpdateItem implements MessageInterface {
 		return null;
 	}
 
+	/**
+	 * Gets the transid.
+	 *
+	 * @return the transid
+	 */
+	public int getTransid() {
+		return this.transid;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -67,6 +81,15 @@ public class MessageUpdateItem implements MessageInterface {
 	@Override
 	public void setCommand(int command) {
 		this.command = command;
+	}
+
+	/**
+	 * Sets the transid.
+	 *
+	 * @param transid the transid to set
+	 */
+	public void setTransid(int transid) {
+		this.transid = transid;
 	}
 
 	/*

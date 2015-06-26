@@ -21,6 +21,7 @@ public class Constant {
 	public static final int    SOCKET_COMMAND_PUSH_TRANS    = 2;
 	public static final int    SOCKET_COMMAND_CONFIRM_TRANS = 3;
 	public static final int    SOCKET_COMMAND_UPDATE_ITEM   = 4;
+	public static final int    SOCKET_COMMAND_ACCEPT_TRANS  = 5;
 
 	// SYSTEM SEPERATOR
 	public static final String SEPERATOR                    = System.getProperty("file.separator");

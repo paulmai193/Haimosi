@@ -160,7 +160,7 @@ public class ItemController_v1_0 {
 					String photo = item.getPhoto();
 					if (photo != null && !photo.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-						        + this.httpRequest.getContextPath() + "/resource/item/" + photo;
+						        + this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photo;
 						jsonItem.addProperty(ParamDefine.ITEM_PHOTO, photoUrl);
 					}
 					jsonItem.addProperty(ParamDefine.ITEM_STATUS_LIKE, item.isLike(user));
