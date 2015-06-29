@@ -10,9 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -75,14 +72,14 @@ public class ItemPOJO implements Serializable {
 	@JsonKey(key = ParamDefine.ITEM_BASIC_AMOUNT)
 	private float                basicAmount;
 
+	/** The is primary. */
+	@Column(name = "isprimary", columnDefinition = "boolean default true")
+	@JsonKey(key = ParamDefine.IS_PRIMARY)
+	private boolean              isPrimary;
+
 	/** The transactions. */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<TransactionPOJO> transactions     = new HashSet<TransactionPOJO>();
-
-	/** The likes. */
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "user_like", catalog = "paulmai", joinColumns = { @JoinColumn(name = "iditem", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "iduser", nullable = false, updatable = false) })
-	private Set<UserPOJO>        likes            = new HashSet<UserPOJO>();
 
 	/**
 	 * Instantiates a new item pojo.
@@ -101,8 +98,9 @@ public class ItemPOJO implements Serializable {
 	 * @param unit the unit
 	 * @param photo the photo
 	 * @param basicAmount the basic amount
+	 * @param isPrimary the is primary
 	 */
-	public ItemPOJO(Integer idItem, String name, String description, float price, String unit, String photo, float basicAmount) {
+	public ItemPOJO(Integer idItem, String name, String description, float price, String unit, String photo, float basicAmount, boolean isPrimary) {
 		this.idItem = idItem;
 		this.name = name;
 		this.description = description;
@@ -110,6 +108,7 @@ public class ItemPOJO implements Serializable {
 		this.unit = unit;
 		this.photo = photo;
 		this.basicAmount = basicAmount;
+		this.isPrimary = isPrimary;
 	}
 
 	/**
@@ -140,31 +139,12 @@ public class ItemPOJO implements Serializable {
 	}
 
 	/**
-	 * Gets the likes.
-	 *
-	 * @return the likes
-	 */
-	public Set<UserPOJO> getLikes() {
-		return this.likes;
-	}
-
-	/**
 	 * Gets the name.
 	 *
 	 * @return the name
 	 */
 	public String getName() {
 		return this.name;
-	}
-
-	/**
-	 * Gets the num like.
-	 *
-	 * @return the num like
-	 */
-	@JsonKey(key = ParamDefine.ITEM_NUM_LIKE)
-	public int getNumLike() {
-		return this.getLikes().size();
 	}
 
 	/**
@@ -216,13 +196,12 @@ public class ItemPOJO implements Serializable {
 	}
 
 	/**
-	 * Checks if is like.
+	 * Checks if is primary.
 	 *
-	 * @param user the user
-	 * @return true, if is like
+	 * @return the isPrimary
 	 */
-	public boolean isLike(UserPOJO user) {
-		return this.getLikes().contains(user);
+	public boolean isPrimary() {
+		return this.isPrimary;
 	}
 
 	/**
@@ -253,15 +232,6 @@ public class ItemPOJO implements Serializable {
 	}
 
 	/**
-	 * Sets the likes.
-	 *
-	 * @param likes the likes to set
-	 */
-	public void setLikes(Set<UserPOJO> likes) {
-		this.likes = likes;
-	}
-
-	/**
 	 * Sets the name.
 	 *
 	 * @param name the name to set
@@ -286,6 +256,15 @@ public class ItemPOJO implements Serializable {
 	 */
 	public void setPrice(float price) {
 		this.price = price;
+	}
+
+	/**
+	 * Sets the primary.
+	 *
+	 * @param isPrimary the isPrimary to set
+	 */
+	public void setPrimary(boolean isPrimary) {
+		this.isPrimary = isPrimary;
 	}
 
 	/**

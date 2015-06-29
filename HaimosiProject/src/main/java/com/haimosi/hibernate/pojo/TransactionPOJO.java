@@ -31,7 +31,7 @@ import com.haimosi.param.ParamDefine;
  * @author Paul Mai
  */
 @Entity
-@Table(name = "transction", catalog = "paulmai")
+@Table(name = "transaction", catalog = "paulmai")
 @DynamicUpdate(value = true)
 @logia.utility.json.annotaion.JsonObject
 public class TransactionPOJO implements Serializable {
@@ -84,6 +84,28 @@ public class TransactionPOJO implements Serializable {
 	@Column(name = "photo", nullable = true, length = 50)
 	private String            photo;
 
+	/** The is like. */
+	@JsonKey(key = ParamDefine.TRANSACTION_STATUS_LIKE)
+	boolean                   isLike;
+
+	/**
+	 * Checks if is like.
+	 *
+	 * @return the isLike
+	 */
+	public boolean isLike() {
+		return isLike;
+	}
+
+	/**
+	 * Sets the like.
+	 *
+	 * @param isLike the isLike to set
+	 */
+	public void setLike(boolean isLike) {
+		this.isLike = isLike;
+	}
+
 	/**
 	 * Instantiates a new transaction pojo.
 	 */
@@ -103,9 +125,10 @@ public class TransactionPOJO implements Serializable {
 	 * @param time the time
 	 * @param status the status
 	 * @param photo the photo
+	 * @param like the like
 	 */
 	public TransactionPOJO(Integer idTransaction, UserPOJO user, ItemPOJO item, float quantity, float amount, byte method, Date time, byte status,
-			String photo) {
+	        String photo, boolean like) {
 		this.idTransaction = idTransaction;
 		this.user = user;
 		this.item = item;
@@ -115,6 +138,7 @@ public class TransactionPOJO implements Serializable {
 		this.time = time;
 		this.status = status;
 		this.photo = photo;
+		this.isLike = like;
 	}
 
 	/**

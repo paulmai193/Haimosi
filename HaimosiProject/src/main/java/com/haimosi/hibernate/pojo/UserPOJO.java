@@ -98,9 +98,10 @@ public class UserPOJO implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<TransactionPOJO> transactions     = new HashSet<TransactionPOJO>();
 
+	/** The likes. */
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "user_like", catalog = "paulmai", joinColumns = { @JoinColumn(name = "iduser", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "iditem", nullable = false, updatable = false) })
-	private Set<ItemPOJO>        likes            = new HashSet<ItemPOJO>();
+	@JoinTable(name = "user_like", catalog = "paulmai", joinColumns = { @JoinColumn(name = "iduser", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "idtransaction", nullable = false, updatable = false) })
+	private Set<TransactionPOJO> likes            = new HashSet<TransactionPOJO>();
 
 	/**
 	 * Instantiates a new user pojo.
@@ -125,7 +126,7 @@ public class UserPOJO implements Serializable {
 	 * @param avatar the avatar
 	 */
 	public UserPOJO(Integer idUser, String firstName, String lastName, String phone, String email, String password, String verifycode, byte status,
-			RolePOJO role, CreditAccountPOJO creditAccount, String avatar) {
+	        RolePOJO role, CreditAccountPOJO creditAccount, String avatar) {
 		this.idUser = idUser;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -140,13 +141,13 @@ public class UserPOJO implements Serializable {
 	}
 
 	/**
-	 * Adds the like to item.
+	 * Adds the like to transaction.
 	 *
-	 * @param item the item
+	 * @param transaction the transaction
 	 * @return true, if successful
 	 */
-	public boolean addLike(ItemPOJO item) {
-		return this.likes.add(item);
+	public boolean addLike(TransactionPOJO transaction) {
+		return this.likes.add(transaction);
 	}
 
 	/*
@@ -160,8 +161,8 @@ public class UserPOJO implements Serializable {
 			UserPOJO compareUser = (UserPOJO) obj;
 			EqualsBuilder builder = new EqualsBuilder();
 			builder.append(this.getStatus(), compareUser.getStatus()).append(this.getEmail(), compareUser.getEmail())
-			.append(this.getFirstName(), compareUser.getFirstName()).append(this.getIdUser(), compareUser.getIdUser())
-			.append(this.getLastName(), compareUser.getLastName()).append(this.getPassword(), compareUser.getPassword());
+			        .append(this.getFirstName(), compareUser.getFirstName()).append(this.getIdUser(), compareUser.getIdUser())
+			        .append(this.getLastName(), compareUser.getLastName()).append(this.getPassword(), compareUser.getPassword());
 			return builder.isEquals();
 		}
 		else {
@@ -228,7 +229,7 @@ public class UserPOJO implements Serializable {
 	 *
 	 * @return the likes
 	 */
-	public Set<ItemPOJO> getLikes() {
+	public Set<TransactionPOJO> getLikes() {
 		return this.likes;
 	}
 
@@ -295,7 +296,7 @@ public class UserPOJO implements Serializable {
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder(17, 31);
 		builder.append(this.getStatus()).append(this.getEmail()).append(this.getFirstName()).append(this.getIdUser()).append(this.getLastName())
-		.append(this.getPassword()).append(this.getPassword()).append(this.getPhone());
+		        .append(this.getPassword()).append(this.getPassword()).append(this.getPhone());
 		return builder.toHashCode();
 	}
 
@@ -368,7 +369,7 @@ public class UserPOJO implements Serializable {
 	 *
 	 * @param likes the likes to set
 	 */
-	public void setLikes(Set<ItemPOJO> likes) {
+	public void setLikes(Set<TransactionPOJO> likes) {
 		this.likes = likes;
 	}
 

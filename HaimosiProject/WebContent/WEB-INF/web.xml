@@ -48,6 +48,7 @@
 		<web-resource-collection>
 			<web-resource-name>No Access</web-resource-name>
 			<url-pattern>/resource/template/*</url-pattern>
+			<url-pattern>/resource/luceneindex/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>tomcat</role-name>

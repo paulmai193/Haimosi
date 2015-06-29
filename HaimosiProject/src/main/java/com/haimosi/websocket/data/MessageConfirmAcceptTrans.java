@@ -13,7 +13,7 @@ import com.haimosi.websocket.endpoint.WSEndpoint;
  * @author Paul Mai
  */
 @logia.utility.json.annotaion.JsonObject
-public class MessageAcceptTrans implements MessageInterface {
+public class MessageConfirmAcceptTrans implements MessageInterface {
 
 	/** The command. */
 	@JsonKey(key = ParamDefine.COMMAND)
@@ -23,9 +23,9 @@ public class MessageAcceptTrans implements MessageInterface {
 	@JsonKey(key = ParamDefine.TRANSACTION_ID)
 	private int  transid;
 
-	/** The method. */
-	@JsonKey(key = ParamDefine.METHOD)
-	private byte method;
+	/** The status. */
+	@JsonKey(key = ParamDefine.STATUS)
+	private byte status;
 
 	/*
 	 * (non-Javadoc)
@@ -46,7 +46,7 @@ public class MessageAcceptTrans implements MessageInterface {
 	public void fromJson(JsonObject json) {
 		this.command = json.get(ParamDefine.COMMAND).getAsInt();
 		this.transid = json.get(ParamDefine.TRANSACTION_ID).getAsInt();
-		this.method = json.get(ParamDefine.METHOD).getAsByte();
+		this.status = json.get(ParamDefine.STATUS).getAsByte();
 	}
 
 	/*
@@ -70,12 +70,12 @@ public class MessageAcceptTrans implements MessageInterface {
 	}
 
 	/**
-	 * Gets the method.
+	 * Gets the status.
 	 *
-	 * @return the method
+	 * @return the status
 	 */
-	public byte getMethod() {
-		return this.method;
+	public byte getStatus() {
+		return this.status;
 	}
 
 	/**
@@ -98,12 +98,12 @@ public class MessageAcceptTrans implements MessageInterface {
 	}
 
 	/**
-	 * Sets the method.
+	 * Sets the status.
 	 *
-	 * @param status the method to set
+	 * @param status the status to set
 	 */
-	public void setMethod(byte method) {
-		this.method = method;
+	public void setStatus(byte status) {
+		this.status = status;
 	}
 
 	/**

@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>Haimosi</groupId>
 	<artifactId>haimosi</artifactId>
-	<version>1.0</version>
+	<version>1.0.0626</version>
 	<packaging>war</packaging>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test</testSourceDirectory>
 		<finalName>haimosi</finalName>
-		<defaultGoal>clean package</defaultGoal>
+		<defaultGoal>clean install</defaultGoal>
 		<resources>
 			<resource>
 				<directory>src/main/resource</directory>

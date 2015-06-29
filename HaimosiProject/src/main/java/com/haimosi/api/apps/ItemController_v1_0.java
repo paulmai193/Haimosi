@@ -16,9 +16,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import logia.hibernate.dao.AbstractDAO;
-import logia.hibernate.util.HibernateUtil;
 import logia.utility.json.JsonTool;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.Session;
 
 import com.google.gson.JsonArray;
@@ -26,9 +26,7 @@ import com.google.gson.JsonObject;
 import com.haimosi.define.StatusCode;
 import com.haimosi.exception.ProcessException;
 import com.haimosi.hibernate.dao.ItemDAO;
-import com.haimosi.hibernate.dao.UserDAO;
 import com.haimosi.hibernate.pojo.ItemPOJO;
-import com.haimosi.hibernate.pojo.UserPOJO;
 import com.haimosi.param.FloatParam;
 import com.haimosi.param.IndexParam;
 import com.haimosi.param.IntegerParam;
@@ -59,31 +57,34 @@ public class ItemController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String addFavorite(@FormParam(ParamDefine.ITEM_ID) IntegerParam idItem) {
-		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
-		try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool); UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
-			JsonObject jsonResponse = new JsonObject();
-
-			ItemPOJO item = itemDAO.get(session, idItem.getValue());
-			if (item != null) {
-				UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
-				user.addLike(item);
-				userDAO.update(session, user);
-				HibernateUtil.commitTransaction(session);
-
-				jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
-			}
-			else {
-				jsonResponse.add(ParamDefine.RESULT, StatusCode.NO_CONTENT.printStatus("Cannot find item with ID " + idItem.getOriginalParam()));
-			}
-
-			return jsonResponse.toString();
-		}
-		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			HibernateUtil.rollbackTransaction(session);
-			throw new ProcessException(e);
-		}
+		// Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
+		// try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool); UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
+		// JsonObject jsonResponse = new JsonObject();
+		//
+		// ItemPOJO item = itemDAO.get(session, idItem.getValue());
+		// if (item != null) {
+		// UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
+		// user.addLike(item);
+		// userDAO.update(session, user);
+		// HibernateUtil.commitTransaction(session);
+		//
+		// jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
+		// }
+		// else {
+		// jsonResponse.add(ParamDefine.RESULT, StatusCode.NO_CONTENT.printStatus("Cannot find item with ID " + idItem.getOriginalParam()));
+		// }
+		//
+		// return jsonResponse.toString();
+		// }
+		// catch (Exception e) {
+		// System.err.println(e.getMessage());
+		// e.printStackTrace();
+		// HibernateUtil.rollbackTransaction(session);
+		// throw new ProcessException(e);
+		// }
+		JsonObject jsonResponse = new JsonObject();
+		jsonResponse.add(ParamDefine.RESULT, StatusCode.DEPRECATED.printStatus());
+		return jsonResponse.toString();
 	}
 
 	/**
@@ -141,14 +142,12 @@ public class ItemController_v1_0 {
 		try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool)) {
 			JsonObject jsonResponse = new JsonObject();
 
-			UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
-
 			List<ItemPOJO> list = itemDAO.getList(session);
 			Collections.sort(list, new Comparator<ItemPOJO>() {
 
 				@Override
 				public int compare(ItemPOJO o1, ItemPOJO o2) {
-					return o1.getIdItem().compareTo(o2.getIdItem());
+					return new CompareToBuilder().append(o2.isPrimary(), o1.isPrimary()).append(o2.getIdItem(), o1.getIdItem()).toComparison();
 				}
 			});
 
@@ -163,7 +162,6 @@ public class ItemController_v1_0 {
 						        + this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photo;
 						jsonItem.addProperty(ParamDefine.ITEM_PHOTO, photoUrl);
 					}
-					jsonItem.addProperty(ParamDefine.ITEM_STATUS_LIKE, item.isLike(user));
 
 					items.add(jsonItem);
 				}
@@ -195,30 +193,33 @@ public class ItemController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String removeFavorite(@FormParam(ParamDefine.ITEM_ID) IntegerParam idItem) {
-		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
-		try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool); UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
-			JsonObject jsonResponse = new JsonObject();
-
-			ItemPOJO item = itemDAO.get(session, idItem.getValue());
-			if (item != null) {
-				UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
-				user.removeLike(item);
-				userDAO.update(session, user);
-				HibernateUtil.commitTransaction(session);
-
-				jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
-			}
-			else {
-				jsonResponse.add(ParamDefine.RESULT, StatusCode.NO_CONTENT.printStatus("Cannot find item with ID " + idItem.getOriginalParam()));
-			}
-
-			return jsonResponse.toString();
-		}
-		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			HibernateUtil.rollbackTransaction(session);
-			throw new ProcessException(e);
-		}
+		// Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
+		// try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool); UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
+		// JsonObject jsonResponse = new JsonObject();
+		//
+		// ItemPOJO item = itemDAO.get(session, idItem.getValue());
+		// if (item != null) {
+		// UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
+		// user.removeLike(item);
+		// userDAO.update(session, user);
+		// HibernateUtil.commitTransaction(session);
+		//
+		// jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
+		// }
+		// else {
+		// jsonResponse.add(ParamDefine.RESULT, StatusCode.NO_CONTENT.printStatus("Cannot find item with ID " + idItem.getOriginalParam()));
+		// }
+		//
+		// return jsonResponse.toString();
+		// }
+		// catch (Exception e) {
+		// System.err.println(e.getMessage());
+		// e.printStackTrace();
+		// HibernateUtil.rollbackTransaction(session);
+		// throw new ProcessException(e);
+		// }
+		JsonObject jsonResponse = new JsonObject();
+		jsonResponse.add(ParamDefine.RESULT, StatusCode.DEPRECATED.printStatus());
+		return jsonResponse.toString();
 	}
 }

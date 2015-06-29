@@ -43,6 +43,7 @@ import com.haimosi.param.IntegerParam;
 import com.haimosi.param.ParamDefine;
 import com.haimosi.pool.DAOPool;
 import com.haimosi.util.Helper;
+import com.haimosi.websocket.data.MessageAcceptTrans;
 import com.haimosi.websocket.data.MessagePushTransaction;
 import com.haimosi.websocket.data.TransactionContent;
 import com.haimosi.websocket.endpoint.WSEndpoint;
@@ -73,7 +74,8 @@ public class TransactionController_v1_0 {
 	public String accept(@FormParam(ParamDefine.TRANSACTION_ID) IntegerParam idTrans, @FormParam(ParamDefine.METHOD) ByteParam method) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
-		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);) {
+		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
+		        RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
 
 			JsonObject jsonResponse = new JsonObject();
 
@@ -84,6 +86,25 @@ public class TransactionController_v1_0 {
 					transDAO.update(session, trans);
 					HibernateUtil.commitTransaction(session);
 
+					MessageAcceptTrans message = new MessageAcceptTrans();
+					message.setCommand(Constant.SOCKET_COMMAND_ACCEPT_TRANS);
+					message.setTransid(idTrans.getValue());
+					message.setMethod(method.getValue());
+					RolePOJO adminRole = roleDAO.get(session, Constant.USER_ROLE_ADMIN);
+					Set<UserPOJO> admins = adminRole.getUsers();
+					for (UserPOJO admin : admins) {
+						WSEndpoint adminSocket = WSEndpoint._clientSessionMap.get(admin.getIdUser());
+						if (adminSocket != null) {
+							try {
+								adminSocket.echoMessage(message);
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+							}
+
+						}
+					}
+
 					jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 				}
 				else {
@@ -93,7 +114,7 @@ public class TransactionController_v1_0 {
 			}
 			else {
 				jsonResponse.add(ParamDefine.RESULT,
-						StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
+				        StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
 			}
 
 			return jsonResponse.toString();
@@ -122,8 +143,8 @@ public class TransactionController_v1_0 {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 		try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool);
-				TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
-				RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
+		        TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
+		        RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
 
 			JsonObject jsonResponse = new JsonObject();
 			ItemPOJO item = itemDAO.get(session, idItem.getValue());
@@ -131,7 +152,7 @@ public class TransactionController_v1_0 {
 				float amount = quantity.getValue() * item.getPrice();
 				Date date = new Date();
 				TransactionPOJO trans = new TransactionPOJO(null, user, item, quantity.getValue(), amount, Constant.PAYMENT_UNCHOOSE, date,
-						Constant.TRANS_WAIT, null);
+				        Constant.TRANS_WAIT, null, false);
 				Integer id = transDAO.saveID(session, trans);
 				HibernateUtil.commitTransaction(session);
 
@@ -203,7 +224,7 @@ public class TransactionController_v1_0 {
 						List<TransactionPOJO> tmpList = new ArrayList<TransactionPOJO>(list);
 						list.clear();
 						for (TransactionPOJO tmpTrans : tmpList) {
-							if (tmpTrans.getItem().getLikes().contains(user)) {
+							if (tmpTrans.isLike()) {
 								list.add(tmpTrans);
 							}
 						}
@@ -241,12 +262,18 @@ public class TransactionController_v1_0 {
 					String photo = transaction.getPhoto();
 					if (photo != null && !photo.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-								+ this.httpRequest.getContextPath() + "/resource/transaction/" + photo;
+						        + this.httpRequest.getContextPath() + "/resource/transaction/" + transaction.getIdTransaction().toString() + "/"
+						        + photo;
 						jsonTransaction.addProperty(ParamDefine.TRANSACTION_PHOTO, photoUrl);
 					}
 					ItemPOJO item = transaction.getItem();
 					JsonObject jsonItem = JsonTool.toJsonObject(item);
-					jsonItem.addProperty(ParamDefine.ITEM_STATUS_LIKE, item.isLike(user));
+					String photoItem = item.getPhoto();
+					if (photoItem != null && !photoItem.isEmpty()) {
+						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
+						        + this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photoItem;
+						jsonItem.addProperty(ParamDefine.ITEM_PHOTO, photoUrl);
+					}
 					jsonTransaction.add(ParamDefine.ITEM, jsonItem);
 
 					transactions.add(jsonTransaction);
@@ -269,4 +296,81 @@ public class TransactionController_v1_0 {
 			throw new ProcessException(e);
 		}
 	}
+
+	/**
+	 * Adds the favorite.
+	 *
+	 * @param idTrans the id transaction
+	 * @return the string
+	 */
+	@POST
+	@Path("/addfavorite")
+	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
+	@Produces(value = { MediaType.APPLICATION_JSON })
+	public String addFavorite(@FormParam(ParamDefine.TRANSACTION_ID) IntegerParam idTrans) {
+		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
+		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool)) {
+			JsonObject jsonResponse = new JsonObject();
+
+			TransactionPOJO trans = transDAO.get(session, idTrans.getValue());
+			if (trans != null) {
+				trans.setLike(true);
+				transDAO.update(session, trans);
+				HibernateUtil.commitTransaction(session);
+
+				jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
+			}
+			else {
+				jsonResponse.add(ParamDefine.RESULT,
+				        StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
+			}
+
+			return jsonResponse.toString();
+		}
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			HibernateUtil.rollbackTransaction(session);
+			throw new ProcessException(e);
+		}
+	}
+
+	/**
+	 * Removes the favorite.
+	 *
+	 * @param idTrans the id transaction
+	 * @return the string
+	 */
+	@POST
+	@Path("/removefavorite")
+	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
+	@Produces(value = { MediaType.APPLICATION_JSON })
+	public String removeFavorite(@FormParam(ParamDefine.TRANSACTION_ID) IntegerParam idTrans) {
+		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
+		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool)) {
+			JsonObject jsonResponse = new JsonObject();
+
+			TransactionPOJO trans = transDAO.get(session, idTrans.getValue());
+			if (trans != null) {
+				trans.setLike(false);
+				transDAO.update(session, trans);
+				HibernateUtil.commitTransaction(session);
+
+				jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
+			}
+			else {
+				jsonResponse.add(ParamDefine.RESULT,
+				        StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
+			}
+
+			return jsonResponse.toString();
+		}
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			HibernateUtil.rollbackTransaction(session);
+			throw new ProcessException(e);
+		}
+	}
+
 }

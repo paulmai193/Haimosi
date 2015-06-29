@@ -13,7 +13,6 @@
 		<property name="hibernate.connection.useUnicode">true</property>
 		<property name="hibernate.connection.characterEncoding">UTF-8</property>
 		<property name="hibernate.connection.charSet">UTF-8</property>		
-		<!-- <property name="hibernate.connection.pool_size">2</property> -->
 		<property name="hibernate.hbm2ddl.auto">update</property>
 		<property name="hibernate.show_sql">false</property>
 		<property name="hibernate.jdbc.batch_size">20</property>
@@ -27,14 +26,20 @@
 		<property name="hibernate.c3p0.min_size">1</property>
 		<property name="hibernate.c3p0.max_statements">0</property>
 		<property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
-		<property name="hibernate.connection.provider_class">org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider</property>		
+		<property name="hibernate.connection.provider_class">org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider</property>	
 		
-		<!-- Mapping -->
+		<!-- Lucene search -->
+		<!-- <property name="hibernate.search.default.directory_provider">filesystem</property>
+		<property name="hibernate.search.default.indexBase">C:\Users\Paul Mai\Desktop\luceneindex</property> -->	
+		
+		<!-- Mapping table -->
 		<mapping class="com.haimosi.hibernate.pojo.RolePOJO" />
 		<mapping class="com.haimosi.hibernate.pojo.TransactionPOJO" />
 		<mapping class="com.haimosi.hibernate.pojo.CreditAccountPOJO" />
 		<mapping class="com.haimosi.hibernate.pojo.ItemPOJO" />
-		<mapping class="com.haimosi.hibernate.pojo.UserPOJO" />				
+		<mapping class="com.haimosi.hibernate.pojo.UserPOJO" />		
+		<!-- Mapping view -->
+		<!-- <mapping class="com.haimosi.hibernate.pojo.ListTransView" />	 -->	
 
 	</session-factory>
 </hibernate-configuration>

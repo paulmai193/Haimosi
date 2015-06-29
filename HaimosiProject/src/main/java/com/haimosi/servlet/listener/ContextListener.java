@@ -17,11 +17,14 @@ import logia.hibernate.dao.AbstractDAO;
 import logia.hibernate.util.HibernateUtil;
 import logia.utility.pool.ThreadPoolFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.hibernate.Session;
 
 import com.haimosi.define.Config;
 import com.haimosi.define.Constant;
+import com.haimosi.hibernate.dao.ListTransDAO;
 import com.haimosi.hibernate.dao.RoleDAO;
+import com.haimosi.hibernate.pojo.ListTransView;
 import com.haimosi.hibernate.pojo.RolePOJO;
 import com.haimosi.pool.DAOPool;
 import com.haimosi.pool.ThreadPool;
@@ -39,6 +42,7 @@ public class ContextListener implements ServletContextListener {
 
 	/** The Constant FILE_PATH_CONFIG. */
 	private static final String FILE_PATH_CONFIG = ContextListener.class.getClassLoader().getResource("haimosi.cfg.xml").getPath();
+	private static final String FILE_PATH_SQL    = ContextListener.class.getClassLoader().getResource("prepare.sql").getPath();
 
 	/*
 	 * (non-Javadoc)
@@ -66,46 +70,61 @@ public class ContextListener implements ServletContextListener {
 			/****************************************************/
 			/** Load everything of this apps context from here **/
 
-			/* Thread pool */
-			ThreadPool._threadPool = new ThreadPoolFactory(Config.num_core_thread_in_pool, Config.num_max_thread_in_pool, Config.thread_priority,
-					true);
-
-			/* Hibernate */
-			HibernateUtil.setConfigPath("hibernate.cfg.xml");
-			// Check role exist, if not create default value
-			Session session = HibernateUtil.beginTransaction();
-			RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool);
-			if (roleDAO.getList(session).size() == 0) {
-				RolePOJO admin = new RolePOJO(null, "ADMIN", null);
-				RolePOJO member = new RolePOJO(null, "MEMBER", null);
-				try {
-					roleDAO.saveOrUpdate(session, admin);
-					roleDAO.saveOrUpdate(session, member);
-					HibernateUtil.commitTransaction(session);
-				}
-				catch (Exception e) {
-					System.err.println(e.getMessage());
-					e.printStackTrace();
-					HibernateUtil.rollbackTransaction(session);
-				}
-				admin = null;
-				member = null;
-			}
-			DAOPool.rolePool.returnObject(roleDAO);
-			HibernateUtil.closeSession(session);
-
 			/* Resource path */
 			Config.resource_avatar_path = contextEvent.getServletContext().getRealPath("/resource/avatar/") + Constant.SEPERATOR;
 			Config.resource_item_path = contextEvent.getServletContext().getRealPath("/resource/item/") + Constant.SEPERATOR;
+			Config.resource_lucene_index = contextEvent.getServletContext().getRealPath("/resource/luceneindex/") + Constant.SEPERATOR;
 			Config.resource_template_path = contextEvent.getServletContext().getRealPath("/resource/template/") + Constant.SEPERATOR;
 			Config.resource_trans_path = contextEvent.getServletContext().getRealPath("/resource/transaction/") + Constant.SEPERATOR;
+
+			/* Thread pool */
+			ThreadPool._threadPool = new ThreadPoolFactory(Config.num_core_thread_in_pool, Config.num_max_thread_in_pool, Config.thread_priority,
+			        true);
+
+			/* Hibernate */
+			HibernateUtil.setConfigPath("hibernate.cfg.xml");
+			Session session = HibernateUtil.beginTransaction();
+			try (RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool);
+			        ListTransDAO listTransDAO = AbstractDAO.borrowFromPool(DAOPool.listTransPool)) {
+
+				// Check role exist, if not create default value
+				if (roleDAO.getList(session).size() == 0) {
+					RolePOJO admin = new RolePOJO(null, "ADMIN", null);
+					RolePOJO member = new RolePOJO(null, "MEMBER", null);
+					roleDAO.saveOrUpdate(session, admin);
+					roleDAO.saveOrUpdate(session, member);
+					admin = null;
+					member = null;
+				}
+
+				/*// Check search view not exist, create new one
+				if (listTransDAO.getList(session).size() == 0) {
+					for (String queryString : FileUtils.readLines(new File(FILE_PATH_SQL))) {
+						listTransDAO.updateBySQLQuery(session, queryString);
+					}
+				}
+				// Indexing for luncene solr
+				File indexingDir = new File(Config.resource_lucene_index + ListTransView.class.getCanonicalName());
+				if (!indexingDir.exists()) {
+					HibernateUtil.indexing();
+				}*/
+
+				HibernateUtil.commitTransaction(session);
+			}
+			catch (Exception e) {
+				System.err.println(e.getMessage());
+				e.printStackTrace();
+				HibernateUtil.rollbackTransaction(session);
+			}
+			finally {
+				HibernateUtil.closeSession(session);
+			}
 
 			/********************* Ending ***********************/
 			/****************************************************/
 		}
 		catch (Throwable e) {
 			System.err.println(e.getMessage());
-			e.printStackTrace();
 			e.printStackTrace();
 		}
 
