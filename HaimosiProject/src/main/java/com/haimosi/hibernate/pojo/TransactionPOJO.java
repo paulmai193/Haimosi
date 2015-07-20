@@ -39,6 +39,11 @@ public class TransactionPOJO implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/** The amount. */
+	@Column(name = "amount", nullable = false)
+	@JsonKey(key = ParamDefine.TRANSACTION_AMOUNT)
+	private float             amount;
+
 	/** The id transaction. */
 	@Id
 	@GeneratedValue
@@ -46,65 +51,42 @@ public class TransactionPOJO implements Serializable {
 	@JsonKey(key = ParamDefine.TRANSACTION_ID)
 	private Integer           idTransaction;
 
-	/** The user. */
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "iduser", nullable = false)
-	private UserPOJO          user;
-
 	/** The item. */
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "iditem", nullable = false)
 	private ItemPOJO          item;
-
-	/** The quantity. */
-	@Column(name = "quantity", nullable = false)
-	@JsonKey(key = ParamDefine.TRANSACTION_QUANTITY)
-	private float             quantity;
-
-	/** The amount. */
-	@Column(name = "amount", nullable = false)
-	@JsonKey(key = ParamDefine.TRANSACTION_AMOUNT)
-	private float             amount;
 
 	/** The method. */
 	@Column(name = "method", nullable = false)
 	@JsonKey(key = ParamDefine.METHOD)
 	private byte              method;
 
-	/** The time. */
-	@Column(name = "time", nullable = false)
-	private Date              time;
+	/** The photo. */
+	@Column(name = "photo", nullable = true, length = 50)
+	private String            photo;
+
+	/** The quantity. */
+	@Column(name = "quantity", nullable = false)
+	@JsonKey(key = ParamDefine.TRANSACTION_QUANTITY)
+	private float             quantity;
 
 	/** The status. */
 	@Column(name = "status", nullable = false)
 	@JsonKey(key = ParamDefine.TRANSACTION_STATUS)
 	private byte              status;
 
-	/** The photo. */
-	@Column(name = "photo", nullable = true, length = 50)
-	private String            photo;
+	/** The time. */
+	@Column(name = "time", nullable = false)
+	private Date              time;
+
+	/** The user. */
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "iduser", nullable = false)
+	private UserPOJO          user;
 
 	/** The is like. */
 	@JsonKey(key = ParamDefine.TRANSACTION_STATUS_LIKE)
 	boolean                   isLike;
-
-	/**
-	 * Checks if is like.
-	 *
-	 * @return the isLike
-	 */
-	public boolean isLike() {
-		return isLike;
-	}
-
-	/**
-	 * Sets the like.
-	 *
-	 * @param isLike the isLike to set
-	 */
-	public void setLike(boolean isLike) {
-		this.isLike = isLike;
-	}
 
 	/**
 	 * Instantiates a new transaction pojo.
@@ -128,7 +110,7 @@ public class TransactionPOJO implements Serializable {
 	 * @param like the like
 	 */
 	public TransactionPOJO(Integer idTransaction, UserPOJO user, ItemPOJO item, float quantity, float amount, byte method, Date time, byte status,
-	        String photo, boolean like) {
+			String photo, boolean like) {
 		this.idTransaction = idTransaction;
 		this.user = user;
 		this.item = item;
@@ -234,6 +216,15 @@ public class TransactionPOJO implements Serializable {
 	}
 
 	/**
+	 * Checks if is like.
+	 *
+	 * @return the isLike
+	 */
+	public boolean isLike() {
+		return this.isLike;
+	}
+
+	/**
 	 * Sets the amount.
 	 *
 	 * @param amount the amount to set
@@ -258,6 +249,15 @@ public class TransactionPOJO implements Serializable {
 	 */
 	public void setItem(ItemPOJO item) {
 		this.item = item;
+	}
+
+	/**
+	 * Sets the like.
+	 *
+	 * @param isLike the isLike to set
+	 */
+	public void setLike(boolean isLike) {
+		this.isLike = isLike;
 	}
 
 	/**

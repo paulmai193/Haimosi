@@ -534,6 +534,12 @@ public class AccountController_v1_0 {
 	        @FormParam(ParamDefine.CARD_NAME) StringNotEmptyParam cardName, @FormParam(ParamDefine.CARD_NUMBER) StringNotEmptyParam cardNumber,
 	        @FormParam(ParamDefine.CVV_NUMBER) StringNotEmptyParam cvvNumber, @FormParam(ParamDefine.EXPIRE) CreditExpireParam expireDay)
 	        throws Exception {
+		// Check all register information available
+		if (firstName == null || lastName == null || phone == null || email == null || password == null || cardName == null || cardNumber == null
+		        || cvvNumber == null || expireDay == null) {
+			throw new BadParamException(new Throwable("Some of required fields empty"));
+		}
+
 		// Check contact parameter have true pattern
 		if (email.getContactType() != ContactParam.CONTACT_EMAIL || phone.getContactType() != ContactParam.CONTACT_PHONE) {
 			throw new BadParamException();
@@ -566,6 +572,11 @@ public class AccountController_v1_0 {
 					        verifyCode, Constant.USER_STATUS_INACTIVATE, role, creditAccount, null);
 					Integer idUser = userDAO.saveID(session, user);
 					if (idUser != null) {
+						// Try to re-add user credit account
+						user.setIdUser(idUser);
+						creditAccount.setUser(user);
+						creditDAO.update(session, creditAccount);
+
 						String token = "" + System.currentTimeMillis();
 						AuthenAppsFilter._clientMap.put(user.getIdUser(), token);
 						this.httpRequest.getSession().setAttribute(ParamDefine.TOKEN, token);
@@ -608,7 +619,6 @@ public class AccountController_v1_0 {
 				}
 
 				HibernateUtil.commitTransaction(session);
-				creditAccount = null;
 			}
 
 			return jsonResponse.toString();

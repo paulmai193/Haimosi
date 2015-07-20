@@ -7,15 +7,16 @@ package com.haimosi.define;
  */
 public class Config {
 
-	/* Thread pool */
-	public static int    num_core_thread_in_pool = 1;
-	public static int    num_max_thread_in_pool  = 5;
-	public static int    thread_priority         = 1;
-
+	/* Data encrypt password */
+	public static String encrypt_password        = "";
+	public static int    interval_validate_pool  = 10;
 	/* DAO pool */
 	public static int    num_core_dao_in_pool    = 1;
+
+	/* Thread pool */
+	public static int    num_core_thread_in_pool = 1;
 	public static int    num_max_dao_in_pool     = 5;
-	public static int    interval_validate_pool  = 10;
+	public static int    num_max_thread_in_pool  = 5;
 
 	/* Resource path */
 	public static String resource_avatar_path    = "";
@@ -24,6 +25,5 @@ public class Config {
 	public static String resource_template_path  = "";
 	public static String resource_trans_path     = "";
 
-	/* Data encrypt password */
-	public static String encrypt_password        = "";
+	public static int    thread_priority         = 1;
 }

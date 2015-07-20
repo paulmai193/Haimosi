@@ -19,13 +19,13 @@ public class MessageConfirmAcceptTrans implements MessageInterface {
 	@JsonKey(key = ParamDefine.COMMAND)
 	private int  command;
 
-	/** The transid. */
-	@JsonKey(key = ParamDefine.TRANSACTION_ID)
-	private int  transid;
-
 	/** The status. */
 	@JsonKey(key = ParamDefine.STATUS)
 	private byte status;
+
+	/** The transid. */
+	@JsonKey(key = ParamDefine.TRANSACTION_ID)
+	private int  transid;
 
 	/*
 	 * (non-Javadoc)

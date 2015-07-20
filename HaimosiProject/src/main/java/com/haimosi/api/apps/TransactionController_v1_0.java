@@ -75,7 +75,7 @@ public class TransactionController_v1_0 {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
-		        RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
+				RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
 
 			JsonObject jsonResponse = new JsonObject();
 
@@ -114,7 +114,45 @@ public class TransactionController_v1_0 {
 			}
 			else {
 				jsonResponse.add(ParamDefine.RESULT,
-				        StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
+						StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
+			}
+
+			return jsonResponse.toString();
+		}
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			HibernateUtil.rollbackTransaction(session);
+			throw new ProcessException(e);
+		}
+	}
+
+	/**
+	 * Adds the favorite.
+	 *
+	 * @param idTrans the id transaction
+	 * @return the string
+	 */
+	@POST
+	@Path("/addfavorite")
+	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
+	@Produces(value = { MediaType.APPLICATION_JSON })
+	public String addFavorite(@FormParam(ParamDefine.TRANSACTION_ID) IntegerParam idTrans) {
+		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
+		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool)) {
+			JsonObject jsonResponse = new JsonObject();
+
+			TransactionPOJO trans = transDAO.get(session, idTrans.getValue());
+			if (trans != null) {
+				trans.setLike(true);
+				transDAO.update(session, trans);
+				HibernateUtil.commitTransaction(session);
+
+				jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
+			}
+			else {
+				jsonResponse.add(ParamDefine.RESULT,
+						StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
 			}
 
 			return jsonResponse.toString();
@@ -143,8 +181,8 @@ public class TransactionController_v1_0 {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 		try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool);
-		        TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
-		        RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
+				TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
+				RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
 
 			JsonObject jsonResponse = new JsonObject();
 			ItemPOJO item = itemDAO.get(session, idItem.getValue());
@@ -152,7 +190,7 @@ public class TransactionController_v1_0 {
 				float amount = quantity.getValue() * item.getPrice();
 				Date date = new Date();
 				TransactionPOJO trans = new TransactionPOJO(null, user, item, quantity.getValue(), amount, Constant.PAYMENT_UNCHOOSE, date,
-				        Constant.TRANS_WAIT, null, false);
+						Constant.TRANS_WAIT, null, false);
 				Integer id = transDAO.saveID(session, trans);
 				HibernateUtil.commitTransaction(session);
 
@@ -262,8 +300,8 @@ public class TransactionController_v1_0 {
 					String photo = transaction.getPhoto();
 					if (photo != null && !photo.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-						        + this.httpRequest.getContextPath() + "/resource/transaction/" + transaction.getIdTransaction().toString() + "/"
-						        + photo;
+								+ this.httpRequest.getContextPath() + "/resource/transaction/" + transaction.getIdTransaction().toString() + "/"
+								+ photo;
 						jsonTransaction.addProperty(ParamDefine.TRANSACTION_PHOTO, photoUrl);
 					}
 					ItemPOJO item = transaction.getItem();
@@ -271,7 +309,7 @@ public class TransactionController_v1_0 {
 					String photoItem = item.getPhoto();
 					if (photoItem != null && !photoItem.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-						        + this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photoItem;
+								+ this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photoItem;
 						jsonItem.addProperty(ParamDefine.ITEM_PHOTO, photoUrl);
 					}
 					jsonTransaction.add(ParamDefine.ITEM, jsonItem);
@@ -293,44 +331,6 @@ public class TransactionController_v1_0 {
 		catch (Exception e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			throw new ProcessException(e);
-		}
-	}
-
-	/**
-	 * Adds the favorite.
-	 *
-	 * @param idTrans the id transaction
-	 * @return the string
-	 */
-	@POST
-	@Path("/addfavorite")
-	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
-	@Produces(value = { MediaType.APPLICATION_JSON })
-	public String addFavorite(@FormParam(ParamDefine.TRANSACTION_ID) IntegerParam idTrans) {
-		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
-		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool)) {
-			JsonObject jsonResponse = new JsonObject();
-
-			TransactionPOJO trans = transDAO.get(session, idTrans.getValue());
-			if (trans != null) {
-				trans.setLike(true);
-				transDAO.update(session, trans);
-				HibernateUtil.commitTransaction(session);
-
-				jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
-			}
-			else {
-				jsonResponse.add(ParamDefine.RESULT,
-				        StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
-			}
-
-			return jsonResponse.toString();
-		}
-		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}
 	}
@@ -360,7 +360,7 @@ public class TransactionController_v1_0 {
 			}
 			else {
 				jsonResponse.add(ParamDefine.RESULT,
-				        StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
+						StatusCode.NO_CONTENT.printStatus("Cannot find transaction with ID " + idTrans.getOriginalParam()));
 			}
 
 			return jsonResponse.toString();

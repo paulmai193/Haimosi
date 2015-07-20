@@ -36,10 +36,10 @@ public class ScalePOJO implements Serializable {
 	@JsonKey(key = ParamDefine.SCALE_ID)
 	private Integer           idScale;
 
-	/** The specification. */
-	@Column(name = "specification", length = 50, nullable = true)
-	@JsonKey(key = ParamDefine.SCALE_SPECIFICATION)
-	private String            specification;
+	/** The metta. */
+	@Column(name = "metta", length = 50, nullable = true)
+	@JsonKey(key = ParamDefine.SCALE_METTA)
+	private String            metta;
 
 	/** The parameter. */
 	@Column(name = "parameter", length = 50, nullable = true)
@@ -51,10 +51,10 @@ public class ScalePOJO implements Serializable {
 	@JsonKey(key = ParamDefine.SCALE_POSITION)
 	private String            position;
 
-	/** The metta. */
-	@Column(name = "metta", length = 50, nullable = true)
-	@JsonKey(key = ParamDefine.SCALE_METTA)
-	private String            metta;
+	/** The specification. */
+	@Column(name = "specification", length = 50, nullable = true)
+	@JsonKey(key = ParamDefine.SCALE_SPECIFICATION)
+	private String            specification;
 
 	/**
 	 * Instantiates a new scale pojo.

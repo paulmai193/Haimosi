@@ -28,6 +28,10 @@ public class RolePOJO implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/** The description. */
+	@Column(name = "description", nullable = true, length = 50)
+	private String            description;
+
 	/** The id role. */
 	@Id
 	@GeneratedValue
@@ -37,10 +41,6 @@ public class RolePOJO implements Serializable {
 	/** The name. */
 	@Column(name = "name", nullable = false, length = 16)
 	private String            name;
-
-	/** The description. */
-	@Column(name = "description", nullable = true, length = 50)
-	private String            description;
 
 	/** The mapping users. */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)

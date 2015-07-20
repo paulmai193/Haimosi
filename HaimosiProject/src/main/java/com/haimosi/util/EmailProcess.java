@@ -18,14 +18,14 @@ import javax.mail.internet.MimeMessage;
  */
 public final class EmailProcess {
 
+	/** The password. */
+	private static String  password;
+
 	/** The session. */
 	private static Session session;
 
 	/** The username. */
 	private static String  username;
-
-	/** The password. */
-	private static String  password;
 
 	/**
 	 * Send email.

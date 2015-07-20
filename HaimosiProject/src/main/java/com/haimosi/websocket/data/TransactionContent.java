@@ -14,6 +14,10 @@ import com.haimosi.param.ParamDefine;
 @logia.utility.json.annotaion.JsonObject
 public class TransactionContent {
 
+	/** The amount. */
+	@JsonKey(key = ParamDefine.TRANSACTION_AMOUNT)
+	private float amount;
+
 	/** The id transaction. */
 	@JsonKey(key = ParamDefine.TRANSACTION_ID)
 	private int   idTransaction;
@@ -21,10 +25,6 @@ public class TransactionContent {
 	/** The quantity. */
 	@JsonKey(key = ParamDefine.TRANSACTION_QUANTITY)
 	private float quantity;
-
-	/** The amount. */
-	@JsonKey(key = ParamDefine.TRANSACTION_AMOUNT)
-	private float amount;
 
 	/** The time. */
 	@JsonKey(key = ParamDefine.TRANSACTION_TIME)

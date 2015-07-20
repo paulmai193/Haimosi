@@ -31,16 +31,6 @@ public class ListTransDAO extends AbstractDAO<ListTransView, Integer> {
 		;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see logia.hibernate.dao.AbstractDAO#getPOJOClass()
-	 */
-	@Override
-	protected Class<ListTransView> getPOJOClass() {
-		return ListTransView.class;
-	}
-
 	/**
 	 * Search by keyword.
 	 *
@@ -106,5 +96,15 @@ public class ListTransDAO extends AbstractDAO<ListTransView, Integer> {
 		// }
 		// return finalList;
 		// }
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see logia.hibernate.dao.AbstractDAO#getPOJOClass()
+	 */
+	@Override
+	protected Class<ListTransView> getPOJOClass() {
+		return ListTransView.class;
 	}
 }

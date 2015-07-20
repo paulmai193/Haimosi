@@ -34,32 +34,32 @@ public class CreditAccountPOJO implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	/** The id credit account. */
-	@Id
-	@GeneratedValue
-	@Column(name = "idcreditaccount", nullable = false)
-	@JsonKey(key = ParamDefine.CARD_ID)
-	private Integer           idCreditAccount;
-
 	/** The card name. */
 	@Column(name = "cardname", nullable = false, length = 30)
 	@JsonKey(key = ParamDefine.CARD_NAME)
 	private String            cardName;
 
 	/** The card number. */
-	@Column(name = "number", nullable = false, length = 16)
+	@Column(name = "number", nullable = false, length = 30)
 	@JsonKey(key = ParamDefine.CARD_NUMBER)
 	private String            cardNumber;
 
+	/** The cvv number. */
+	@Column(name = "cvvnumber", nullable = false, length = 30)
+	@JsonKey(key = ParamDefine.CVV_NUMBER)
+	private String            cvvNumber;
+
 	/** The expire date. */
-	@Column(name = "expiredate", nullable = false, length = 7)
+	@Column(name = "expiredate", nullable = false, length = 30)
 	@JsonKey(key = ParamDefine.EXPIRE)
 	private String            expireDate;
 
-	/** The cvv number. */
-	@Column(name = "cvvnumber", nullable = false, length = 4)
-	@JsonKey(key = ParamDefine.CVV_NUMBER)
-	private String            cvvNumber;
+	/** The id credit account. */
+	@Id
+	@GeneratedValue
+	@Column(name = "idcreditaccount", nullable = false)
+	@JsonKey(key = ParamDefine.CARD_ID)
+	private Integer           idCreditAccount;
 
 	/** The user. */
 	@OneToOne(fetch = FetchType.EAGER)
@@ -83,11 +83,11 @@ public class CreditAccountPOJO implements Serializable {
 	 * @param cvv the cvv number
 	 */
 	public CreditAccountPOJO(Integer idCard, String name, String number, String expire, String cvv) {
-		this.idCreditAccount = idCard;
-		this.cardName = name;
-		this.cardNumber = number;
-		this.expireDate = expire;
-		this.cvvNumber = cvv;
+		this.setIdCreditAccount(idCard);
+		this.setCardName(name);
+		this.setCardNumber(number);
+		this.setExpireDate(expire);
+		this.setCvvNumber(cvv);
 	}
 
 	/**
@@ -160,6 +160,15 @@ public class CreditAccountPOJO implements Serializable {
 	}
 
 	/**
+	 * Gets the user.
+	 *
+	 * @return the user
+	 */
+	public UserPOJO getUser() {
+		return this.user;
+	}
+
+	/**
 	 * Sets the card name.
 	 *
 	 * @param cardName the cardName to set
@@ -182,7 +191,7 @@ public class CreditAccountPOJO implements Serializable {
 	public void setCardNumber(String cardNumber) {
 		String s = EncryptionUtils.encode(cardNumber, Config.encrypt_password);
 		if (s != null) {
-			this.cardName = s;
+			this.cardNumber = s;
 		}
 		else {
 			this.cardNumber = cardNumber;
@@ -197,7 +206,7 @@ public class CreditAccountPOJO implements Serializable {
 	public void setCvvNumber(String cvvNumber) {
 		String s = EncryptionUtils.encode(cvvNumber, Config.encrypt_password);
 		if (s != null) {
-			this.cardName = s;
+			this.cvvNumber = s;
 		}
 		else {
 			this.cvvNumber = cvvNumber;
@@ -212,7 +221,7 @@ public class CreditAccountPOJO implements Serializable {
 	public void setExpireDate(String expireDate) {
 		String s = EncryptionUtils.encode(expireDate, Config.encrypt_password);
 		if (s != null) {
-			this.cardName = s;
+			this.expireDate = s;
 		}
 		else {
 			this.expireDate = expireDate;
@@ -226,6 +235,15 @@ public class CreditAccountPOJO implements Serializable {
 	 */
 	public void setIdCreditAccount(Integer idCreditAccount) {
 		this.idCreditAccount = idCreditAccount;
+	}
+
+	/**
+	 * Sets the user.
+	 *
+	 * @param user the user to set
+	 */
+	public void setUser(UserPOJO user) {
+		this.user = user;
 	}
 
 	/**

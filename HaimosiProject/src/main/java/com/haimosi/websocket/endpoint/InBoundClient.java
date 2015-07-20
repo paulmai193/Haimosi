@@ -42,17 +42,17 @@ public class InBoundClient {
 	/** The _client session map. */
 	public static Map<Integer, InBoundClient> _clientSessionMap = Collections.synchronizedMap(new HashMap<Integer, InBoundClient>());
 
-	/** The session. */
-	Session                                   session;
-
-	/** The protocol. */
-	String                                    protocol;
+	/** The create time. */
+	long                                      createTime;
 
 	/** The id user. */
 	Integer                                   idUser;
 
-	/** The create time. */
-	long                                      createTime;
+	/** The protocol. */
+	String                                    protocol;
+
+	/** The session. */
+	Session                                   session;
 
 	/**
 	 * Echo message.

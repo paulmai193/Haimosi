@@ -10,44 +10,44 @@ import com.haimosi.param.ParamDefine;
  */
 public enum StatusCode {
 
-	/** The must login. */
-	MUST_LOGIN(100, "Must login"),
-
-	/** The locked. */
-	LOCKED(101, "Locked"),
-
-	/** The time out. */
-	TIME_OUT(102, "Session timeout"),
-
-	/** The must verify. */
-	MUST_VERIFY(103, "Must verify account"),
-
-	/** The success. */
-	SUCCESS(200, "Success"),
-
-	/** The no content. */
-	NO_CONTENT(201, "No content"),
-
-	/** The wrong account. */
-	WRONG_ACCOUNT(300, "Wrong account"),
-
-	/** The exist account. */
-	EXIST_ACCOUNT(301, "Exist account"),
+	/** The bad param. */
+	BAD_PARAM(303, "Bad parameter"),
 
 	/** The bad request. */
 	BAD_REQUEST(302, "Bad request"),
 
-	/** The bad param. */
-	BAD_PARAM(303, "Bad parameter"),
-
 	/** The bad verify code. */
 	BAD_VERIFY_CODE(304, "Bad verify code"),
+
+	/** The deprecated. */
+	DEPRECATED(401, "Deprecated, no longer support"),
+
+	/** The exist account. */
+	EXIST_ACCOUNT(301, "Exist account"),
 
 	/** The internal error. */
 	INTERNAL_ERROR(400, "Internal error"),
 
-	/** The deprecated. */
-	DEPRECATED(401, "Deprecated, no longer support");
+	/** The locked. */
+	LOCKED(101, "Locked"),
+
+	/** The must login. */
+	MUST_LOGIN(100, "Must login"),
+
+	/** The must verify. */
+	MUST_VERIFY(103, "Must verify account"),
+
+	/** The no content. */
+	NO_CONTENT(201, "No content"),
+
+	/** The success. */
+	SUCCESS(200, "Success"),
+
+	/** The time out. */
+	TIME_OUT(102, "Session timeout"),
+
+	/** The wrong account. */
+	WRONG_ACCOUNT(300, "Wrong account");
 
 	/** The code. */
 	int    code;

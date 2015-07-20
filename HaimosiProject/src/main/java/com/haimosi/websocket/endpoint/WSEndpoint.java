@@ -37,14 +37,14 @@ public class WSEndpoint {
 	/** The session. */
 	public Session                         session;
 
-	/** The protocol. */
-	String                                 protocol;
-
 	/** The id user. */
 	public UserPOJO                        user;
 
 	/** The create time. */
 	long                                   createTime;
+
+	/** The protocol. */
+	String                                 protocol;
 
 	/**
 	 * Echo message.

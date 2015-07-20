@@ -35,6 +35,16 @@ public class ItemPOJO implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long    serialVersionUID = 1L;
 
+	/** The basic amount. */
+	@Column(name = "basicamount", nullable = false)
+	@JsonKey(key = ParamDefine.ITEM_BASIC_AMOUNT)
+	private float                basicAmount;
+
+	/** The description. */
+	@Column(name = "description", columnDefinition = "TEXT", nullable = true)
+	@JsonKey(key = ParamDefine.ITEM_DESCRIPTION)
+	private String               description;
+
 	/** The id item. */
 	@Id
 	@GeneratedValue
@@ -42,44 +52,34 @@ public class ItemPOJO implements Serializable {
 	@JsonKey(key = ParamDefine.ITEM_ID)
 	private Integer              idItem;
 
+	/** The is primary. */
+	@Column(name = "isprimary", columnDefinition = "boolean default true")
+	@JsonKey(key = ParamDefine.IS_PRIMARY)
+	private boolean              isPrimary;
+
 	/** The name. */
 	@Column(name = "name", nullable = false, length = 30)
 	@JsonKey(key = ParamDefine.ITEM_NAME)
 	private String               name;
-
-	/** The description. */
-	@Column(name = "description", columnDefinition = "TEXT", nullable = true)
-	@JsonKey(key = ParamDefine.ITEM_DESCRIPTION)
-	private String               description;
-
-	/** The price. */
-	@Column(name = "price", nullable = false)
-	@JsonKey(key = ParamDefine.ITEM_PRICE)
-	private float                price;
-
-	/** The unit. */
-	@Column(name = "unit", nullable = false, length = 5)
-	@JsonKey(key = ParamDefine.ITEM_UNIT)
-	private String               unit;
 
 	/** The photo. */
 	@Column(name = "photo", nullable = true, length = 50)
 	@JsonKey(key = ParamDefine.ITEM_PHOTO)
 	private String               photo;
 
-	/** The basic amount. */
-	@Column(name = "basicamount", nullable = false)
-	@JsonKey(key = ParamDefine.ITEM_BASIC_AMOUNT)
-	private float                basicAmount;
-
-	/** The is primary. */
-	@Column(name = "isprimary", columnDefinition = "boolean default true")
-	@JsonKey(key = ParamDefine.IS_PRIMARY)
-	private boolean              isPrimary;
+	/** The price. */
+	@Column(name = "price", nullable = false)
+	@JsonKey(key = ParamDefine.ITEM_PRICE)
+	private float                price;
 
 	/** The transactions. */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<TransactionPOJO> transactions     = new HashSet<TransactionPOJO>();
+
+	/** The unit. */
+	@Column(name = "unit", nullable = false, length = 5)
+	@JsonKey(key = ParamDefine.ITEM_UNIT)
+	private String               unit;
 
 	/**
 	 * Instantiates a new item pojo.

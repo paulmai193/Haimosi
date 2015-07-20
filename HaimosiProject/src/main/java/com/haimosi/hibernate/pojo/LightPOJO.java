@@ -29,6 +29,11 @@ public class LightPOJO implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/** The color. */
+	@Column(name = "color", length = 50, nullable = true)
+	@JsonKey(key = ParamDefine.LIGHT_COLOR)
+	private String            color;
+
 	/** The id light. */
 	@Id
 	@GeneratedValue
@@ -40,11 +45,6 @@ public class LightPOJO implements Serializable {
 	@Column(name = "port", length = 5, nullable = true)
 	@JsonKey(key = ParamDefine.LIGHT_PORT)
 	private int               port;
-
-	/** The color. */
-	@Column(name = "color", length = 50, nullable = true)
-	@JsonKey(key = ParamDefine.LIGHT_COLOR)
-	private String            color;
 
 	/**
 	 * Instantiates a new light pojo.

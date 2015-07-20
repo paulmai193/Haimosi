@@ -36,6 +36,9 @@ import com.haimosi.pool.DAOPool;
  */
 public class AuthenAppsFilter implements Filter {
 
+	/** The _client map. */
+	public static Map<Integer, String> _clientMap = new HashMap<Integer, String>();
+
 	/** The Constant listAllowReq. List of allow http request without validate */
 	private static final List<String>  listAllowReq;
 
@@ -50,9 +53,6 @@ public class AuthenAppsFilter implements Filter {
 		AuthenAppsFilter.listAllowReq.add("api/v1.0/apps/item/list");
 
 	}
-
-	/** The _client map. */
-	public static Map<Integer, String> _clientMap = new HashMap<Integer, String>();
 
 	/*
 	 * (non-Javadoc)
@@ -86,7 +86,7 @@ public class AuthenAppsFilter implements Filter {
 						if (user != null) {
 							Boolean firstTimeUse = (Boolean) req.getSession().getAttribute(ParamDefine.FIRST_TIME_USE);
 
-							if ((firstTimeUse != null && firstTimeUse.equals(Boolean.TRUE)) || user.getStatus() == Constant.USER_STATUS_ACTIVATE) {
+							if (firstTimeUse != null && firstTimeUse.equals(Boolean.TRUE) || user.getStatus() == Constant.USER_STATUS_ACTIVATE) {
 								req.setAttribute(ParamDefine.USER, user);
 
 								chain.doFilter(req, response);
@@ -107,7 +107,7 @@ public class AuthenAppsFilter implements Filter {
 						System.err.println(e.getMessage());
 						e.printStackTrace();
 						RequestDispatcher dispatcher = req.getRequestDispatcher("/errorhander?errorcode=" + StatusCode.INTERNAL_ERROR.getCode()
-						        + "&errormessage=" + e.getMessage());
+								+ "&errormessage=" + e.getMessage());
 						dispatcher.forward(request, response);
 					}
 				}

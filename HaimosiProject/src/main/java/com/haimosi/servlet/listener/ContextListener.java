@@ -78,13 +78,13 @@ public class ContextListener implements ServletContextListener {
 
 			/* Thread pool */
 			ThreadPool._threadPool = new ThreadPoolFactory(Config.num_core_thread_in_pool, Config.num_max_thread_in_pool, Config.thread_priority,
-			        true);
+					true);
 
 			/* Hibernate */
 			HibernateUtil.setConfigPath("hibernate.cfg.xml");
 			Session session = HibernateUtil.beginTransaction();
 			try (RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool);
-			        ListTransDAO listTransDAO = AbstractDAO.borrowFromPool(DAOPool.listTransPool)) {
+					ListTransDAO listTransDAO = AbstractDAO.borrowFromPool(DAOPool.listTransPool)) {
 
 				// Check role exist, if not create default value
 				if (roleDAO.getList(session).size() == 0) {
@@ -98,7 +98,7 @@ public class ContextListener implements ServletContextListener {
 
 				// Check search view not exist, create new one
 				if (listTransDAO.getList(session).size() == 0) {
-					for (String queryString : FileUtils.readLines(new File(FILE_PATH_SQL))) {
+					for (String queryString : FileUtils.readLines(new File(ContextListener.FILE_PATH_SQL))) {
 						listTransDAO.updateBySQLQuery(session, queryString);
 					}
 				}

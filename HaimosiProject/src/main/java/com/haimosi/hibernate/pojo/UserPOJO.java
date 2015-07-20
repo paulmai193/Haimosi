@@ -41,6 +41,25 @@ public class UserPOJO implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long    serialVersionUID = 1L;
 
+	/** The avatar. */
+	@Column(name = "avatar", nullable = true, length = 50)
+	@JsonKey(key = ParamDefine.AVATAR)
+	private String               avatar;
+
+	/** The credit account. */
+	@OneToOne(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private CreditAccountPOJO    creditAccount;
+
+	/** The email. */
+	@Column(name = "email", nullable = false, length = 40)
+	@JsonKey(key = ParamDefine.EMAIL)
+	private String               email;
+
+	/** The first name. */
+	@Column(name = "firstname", nullable = false, length = 16)
+	@JsonKey(key = ParamDefine.FIRST_NAME)
+	private String               firstName;
+
 	/** The id user. */
 	@Id
 	@GeneratedValue
@@ -48,60 +67,41 @@ public class UserPOJO implements Serializable {
 	@JsonKey(key = ParamDefine.USER_ID)
 	private Integer              idUser;
 
-	/** The first name. */
-	@Column(name = "firstname", nullable = false, length = 16)
-	@JsonKey(key = ParamDefine.FIRST_NAME)
-	private String               firstName;
-
 	/** The last name. */
 	@Column(name = "lastname", nullable = false, length = 16)
 	@JsonKey(key = ParamDefine.LAST_NAME)
 	private String               lastName;
+
+	/** The likes. */
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "user_like", catalog = "paulmai", joinColumns = { @JoinColumn(name = "iduser", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "idtransaction", nullable = false, updatable = false) })
+	private Set<TransactionPOJO> likes            = new HashSet<TransactionPOJO>();
+
+	/** The password. */
+	@Column(name = "password", nullable = false, length = 40)
+	private String               password;
 
 	/** The phone. */
 	@Column(name = "phone", nullable = false, length = 16)
 	@JsonKey(key = ParamDefine.PHONE)
 	private String               phone;
 
-	/** The email. */
-	@Column(name = "email", nullable = false, length = 40)
-	@JsonKey(key = ParamDefine.EMAIL)
-	private String               email;
-
-	/** The password. */
-	@Column(name = "password", nullable = false, length = 40)
-	private String               password;
-
-	/** The verify code. */
-	@Column(name = "verifycode", nullable = true, length = 6)
-	private String               verifyCode;
-
-	/** The status. */
-	@Column(name = "status", nullable = false)
-	private byte                 status;
-
-	/** The avatar. */
-	@Column(name = "avatar", nullable = true, length = 50)
-	@JsonKey(key = ParamDefine.AVATAR)
-	private String               avatar;
-
 	/** The role. */
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idrole", nullable = false)
 	private RolePOJO             role;
 
-	/** The credit account. */
-	@OneToOne(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	private CreditAccountPOJO    creditAccount;
+	/** The status. */
+	@Column(name = "status", nullable = false)
+	private byte                 status;
 
 	/** The mapping transactions. */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<TransactionPOJO> transactions     = new HashSet<TransactionPOJO>();
 
-	/** The likes. */
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "user_like", catalog = "paulmai", joinColumns = { @JoinColumn(name = "iduser", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "idtransaction", nullable = false, updatable = false) })
-	private Set<TransactionPOJO> likes            = new HashSet<TransactionPOJO>();
+	/** The verify code. */
+	@Column(name = "verifycode", nullable = true, length = 6)
+	private String               verifyCode;
 
 	/**
 	 * Instantiates a new user pojo.
@@ -126,7 +126,7 @@ public class UserPOJO implements Serializable {
 	 * @param avatar the avatar
 	 */
 	public UserPOJO(Integer idUser, String firstName, String lastName, String phone, String email, String password, String verifycode, byte status,
-	        RolePOJO role, CreditAccountPOJO creditAccount, String avatar) {
+			RolePOJO role, CreditAccountPOJO creditAccount, String avatar) {
 		this.idUser = idUser;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -161,8 +161,8 @@ public class UserPOJO implements Serializable {
 			UserPOJO compareUser = (UserPOJO) obj;
 			EqualsBuilder builder = new EqualsBuilder();
 			builder.append(this.getStatus(), compareUser.getStatus()).append(this.getEmail(), compareUser.getEmail())
-			        .append(this.getFirstName(), compareUser.getFirstName()).append(this.getIdUser(), compareUser.getIdUser())
-			        .append(this.getLastName(), compareUser.getLastName()).append(this.getPassword(), compareUser.getPassword());
+			.append(this.getFirstName(), compareUser.getFirstName()).append(this.getIdUser(), compareUser.getIdUser())
+			.append(this.getLastName(), compareUser.getLastName()).append(this.getPassword(), compareUser.getPassword());
 			return builder.isEquals();
 		}
 		else {
@@ -296,7 +296,7 @@ public class UserPOJO implements Serializable {
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder(17, 31);
 		builder.append(this.getStatus()).append(this.getEmail()).append(this.getFirstName()).append(this.getIdUser()).append(this.getLastName())
-		        .append(this.getPassword()).append(this.getPassword()).append(this.getPhone());
+		.append(this.getPassword()).append(this.getPassword()).append(this.getPhone());
 		return builder.toHashCode();
 	}
 

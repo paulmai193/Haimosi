@@ -48,36 +48,16 @@ public class ListTransView implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	/** The id transaction. */
-	@Id
-	@Column(name = "idtransaction", nullable = false)
-	@JsonKey(key = ParamDefine.TRANSACTION_ID)
-	private int               idTransaction;
-
-	/** The quantity. */
-	@Column(name = "quantity", nullable = false)
-	@JsonKey(key = ParamDefine.TRANSACTION_QUANTITY)
-	private float             quantity;
-
 	/** The amount. */
 	@Column(name = "amount", nullable = false)
 	@JsonKey(key = ParamDefine.TRANSACTION_AMOUNT)
 	private float             amount;
 
-	/** The time. */
-	@Column(name = "time", nullable = false)
-	// @Field(index = Index.YES)
-	// @DateBridge(resolution = Resolution.SECOND)
-	private Date              time;
-
-	/** The photo. */
-	@Column(name = "photo", nullable = true, length = 50)
-	private String            photo;
-
-	/** The status. */
-	@Column(name = "status", nullable = false)
-	@JsonKey(key = ParamDefine.TRANSACTION_STATUS)
-	private byte              status;
+	/** The id transaction. */
+	@Id
+	@Column(name = "idtransaction", nullable = false)
+	@JsonKey(key = ParamDefine.TRANSACTION_ID)
+	private int               idTransaction;
 
 	/** The method. */
 	@Column(name = "method", nullable = false)
@@ -89,6 +69,26 @@ public class ListTransView implements Serializable {
 	// @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
 	// @Analyzer(definition = "index")
 	private String            name;
+
+	/** The photo. */
+	@Column(name = "photo", nullable = true, length = 50)
+	private String            photo;
+
+	/** The quantity. */
+	@Column(name = "quantity", nullable = false)
+	@JsonKey(key = ParamDefine.TRANSACTION_QUANTITY)
+	private float             quantity;
+
+	/** The status. */
+	@Column(name = "status", nullable = false)
+	@JsonKey(key = ParamDefine.TRANSACTION_STATUS)
+	private byte              status;
+
+	/** The time. */
+	@Column(name = "time", nullable = false)
+	// @Field(index = Index.YES)
+	// @DateBridge(resolution = Resolution.SECOND)
+	private Date              time;
 
 	/** The unit. */
 	@Column(name = "unit", nullable = false, length = 5)
@@ -103,21 +103,48 @@ public class ListTransView implements Serializable {
 	}
 
 	/**
+	 * Gets the amount.
+	 *
+	 * @return the amount
+	 */
+	public float getAmount() {
+		return this.amount;
+	}
+
+	/**
 	 * Gets the id transaction.
 	 *
 	 * @return the idTransaction
 	 */
 	public int getIdTransaction() {
-		return idTransaction;
+		return this.idTransaction;
 	}
 
 	/**
-	 * Sets the id transaction.
+	 * Gets the method.
 	 *
-	 * @param idTransaction the idTransaction to set
+	 * @return the method
 	 */
-	public void setIdTransaction(int idTransaction) {
-		this.idTransaction = idTransaction;
+	public byte getMethod() {
+		return this.method;
+	}
+
+	/**
+	 * Gets the name.
+	 *
+	 * @return the name
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * Gets the photo.
+	 *
+	 * @return the photo
+	 */
+	public String getPhoto() {
+		return this.photo;
 	}
 
 	/**
@@ -126,16 +153,25 @@ public class ListTransView implements Serializable {
 	 * @return the quantity
 	 */
 	public float getQuantity() {
-		return quantity;
+		return this.quantity;
 	}
 
 	/**
-	 * Sets the quantity.
+	 * Gets the status.
 	 *
-	 * @param quantity the quantity to set
+	 * @return the status
 	 */
-	public void setQuantity(float quantity) {
-		this.quantity = quantity;
+	public byte getStatus() {
+		return this.status;
+	}
+
+	/**
+	 * Gets the time.
+	 *
+	 * @return the time
+	 */
+	public Date getTime() {
+		return this.time;
 	}
 
 	/**
@@ -150,12 +186,12 @@ public class ListTransView implements Serializable {
 	}
 
 	/**
-	 * Gets the amount.
+	 * Gets the unit.
 	 *
-	 * @return the amount
+	 * @return the unit
 	 */
-	public float getAmount() {
-		return amount;
+	public String getUnit() {
+		return this.unit;
 	}
 
 	/**
@@ -168,66 +204,12 @@ public class ListTransView implements Serializable {
 	}
 
 	/**
-	 * Gets the time.
+	 * Sets the id transaction.
 	 *
-	 * @return the time
+	 * @param idTransaction the idTransaction to set
 	 */
-	public Date getTime() {
-		return time;
-	}
-
-	/**
-	 * Sets the time.
-	 *
-	 * @param time the time to set
-	 */
-	public void setTime(Date time) {
-		this.time = time;
-	}
-
-	/**
-	 * Gets the photo.
-	 *
-	 * @return the photo
-	 */
-	public String getPhoto() {
-		return photo;
-	}
-
-	/**
-	 * Sets the photo.
-	 *
-	 * @param photo the photo to set
-	 */
-	public void setPhoto(String photo) {
-		this.photo = photo;
-	}
-
-	/**
-	 * Gets the status.
-	 *
-	 * @return the status
-	 */
-	public byte getStatus() {
-		return status;
-	}
-
-	/**
-	 * Sets the status.
-	 *
-	 * @param status the status to set
-	 */
-	public void setStatus(byte status) {
-		this.status = status;
-	}
-
-	/**
-	 * Gets the method.
-	 *
-	 * @return the method
-	 */
-	public byte getMethod() {
-		return method;
+	public void setIdTransaction(int idTransaction) {
+		this.idTransaction = idTransaction;
 	}
 
 	/**
@@ -240,15 +222,6 @@ public class ListTransView implements Serializable {
 	}
 
 	/**
-	 * Gets the name.
-	 *
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
 	 * Sets the name.
 	 *
 	 * @param name the name to set
@@ -258,12 +231,39 @@ public class ListTransView implements Serializable {
 	}
 
 	/**
-	 * Gets the unit.
+	 * Sets the photo.
 	 *
-	 * @return the unit
+	 * @param photo the photo to set
 	 */
-	public String getUnit() {
-		return unit;
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+
+	/**
+	 * Sets the quantity.
+	 *
+	 * @param quantity the quantity to set
+	 */
+	public void setQuantity(float quantity) {
+		this.quantity = quantity;
+	}
+
+	/**
+	 * Sets the status.
+	 *
+	 * @param status the status to set
+	 */
+	public void setStatus(byte status) {
+		this.status = status;
+	}
+
+	/**
+	 * Sets the time.
+	 *
+	 * @param time the time to set
+	 */
+	public void setTime(Date time) {
+		this.time = time;
 	}
 
 	/**
