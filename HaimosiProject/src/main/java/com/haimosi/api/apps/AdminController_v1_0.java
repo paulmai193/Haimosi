@@ -1162,6 +1162,7 @@ public class AdminController_v1_0 {
 				users.add(JsonTool.mergeJson(jsonUser, jsonCredit));
 			}
 			jsonResponse.add(ParamDefine.USERS, users);
+			jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 
 			return jsonResponse.toString();
 		}
