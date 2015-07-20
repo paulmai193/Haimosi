@@ -84,7 +84,9 @@ public class AuthenAppsFilter implements Filter {
 					try (UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
 						UserPOJO user = userDAO.get(session, idUser);
 						if (user != null) {
-							if (user.getStatus() == Constant.USER_STATUS_ACTIVATE) {
+							Boolean firstTimeUse = (Boolean) req.getSession().getAttribute(ParamDefine.FIRST_TIME_USE);
+
+							if ((firstTimeUse != null && firstTimeUse.equals(Boolean.TRUE)) || user.getStatus() == Constant.USER_STATUS_ACTIVATE) {
 								req.setAttribute(ParamDefine.USER, user);
 
 								chain.doFilter(req, response);
@@ -105,7 +107,7 @@ public class AuthenAppsFilter implements Filter {
 						System.err.println(e.getMessage());
 						e.printStackTrace();
 						RequestDispatcher dispatcher = req.getRequestDispatcher("/errorhander?errorcode=" + StatusCode.INTERNAL_ERROR.getCode()
-								+ "&errormessage=" + e.getMessage());
+						        + "&errormessage=" + e.getMessage());
 						dispatcher.forward(request, response);
 					}
 				}

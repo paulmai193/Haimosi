@@ -26,11 +26,11 @@
 		<property name="hibernate.c3p0.min_size">1</property>
 		<property name="hibernate.c3p0.max_statements">0</property>
 		<property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
-		<property name="hibernate.connection.provider_class">org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider</property>	
+		<!-- <property name="hibernate.connection.provider_class">org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider</property> -->	
 		
 		<!-- Lucene search -->
 		<!-- <property name="hibernate.search.default.directory_provider">filesystem</property>
-		<property name="hibernate.search.default.indexBase">C:\Users\Paul Mai\Desktop\luceneindex</property> -->	
+		<property name="hibernate.search.default.indexBase">/usr/tomcat/webapps/luceneindex</property>	 -->
 		
 		<!-- Mapping table -->
 		<mapping class="com.haimosi.hibernate.pojo.RolePOJO" />
@@ -39,7 +39,7 @@
 		<mapping class="com.haimosi.hibernate.pojo.ItemPOJO" />
 		<mapping class="com.haimosi.hibernate.pojo.UserPOJO" />		
 		<!-- Mapping view -->
-		<!-- <mapping class="com.haimosi.hibernate.pojo.ListTransView" />	 -->	
+		<mapping class="com.haimosi.hibernate.pojo.ListTransView" />		
 
 	</session-factory>
 </hibernate-configuration>

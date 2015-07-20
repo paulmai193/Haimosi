@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
-extraProperties=
+extraProperties=sonar.exclusions\=\r\nsonar.host.url\=http\://localhost\:9000/
+lastAnalysisDate=1435545117476
 projectKey=Haimosi\:haimosi
 serverUrl=http\://localhost\:9000
 version=2

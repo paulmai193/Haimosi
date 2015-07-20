@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,12 +38,14 @@ import com.haimosi.exception.ProcessException;
 import com.haimosi.hibernate.dao.CreditAccountDAO;
 import com.haimosi.hibernate.dao.ItemDAO;
 import com.haimosi.hibernate.dao.LightDAO;
+import com.haimosi.hibernate.dao.ListTransDAO;
 import com.haimosi.hibernate.dao.ScaleDAO;
 import com.haimosi.hibernate.dao.TransactionDAO;
 import com.haimosi.hibernate.dao.UserDAO;
 import com.haimosi.hibernate.pojo.CreditAccountPOJO;
 import com.haimosi.hibernate.pojo.ItemPOJO;
 import com.haimosi.hibernate.pojo.LightPOJO;
+import com.haimosi.hibernate.pojo.ListTransView;
 import com.haimosi.hibernate.pojo.ScalePOJO;
 import com.haimosi.hibernate.pojo.TransactionPOJO;
 import com.haimosi.hibernate.pojo.UserPOJO;
@@ -53,6 +53,7 @@ import com.haimosi.param.BooleanParam;
 import com.haimosi.param.ByteParam;
 import com.haimosi.param.ContactParam;
 import com.haimosi.param.CreditExpireParam;
+import com.haimosi.param.DayParam;
 import com.haimosi.param.FloatParam;
 import com.haimosi.param.IndexParam;
 import com.haimosi.param.IntegerParam;
@@ -96,7 +97,7 @@ public class AdminController_v1_0 {
 			TransactionPOJO trans = transDAO.get(session, id.getValue());
 			if (trans != null) {
 				if (trans.getStatus() == Constant.TRANS_WAIT) {
-					if (status.getValue().equals(1)) {
+					if (status.getValue().equals((byte) 1)) {
 						trans.setStatus(Constant.TRANS_DONE);
 					}
 					else {
@@ -1024,9 +1025,10 @@ public class AdminController_v1_0 {
 	 * @return the string
 	 */
 	@GET
-	@Path("/listtransaction")
+	@Path("/listtransaction_old")
 	@Produces(value = { MediaType.APPLICATION_JSON })
-	public String listTransactions(@QueryParam(ParamDefine.PAGE) IndexParam page, @QueryParam(ParamDefine.KEYWORD) String keyword) {
+	public String listTransactions(@QueryParam(ParamDefine.PAGE) IndexParam page, @QueryParam(ParamDefine.KEYWORD) String keyword,
+	        @QueryParam(ParamDefine.BEGIN) DayParam begin, @QueryParam(ParamDefine.END) DayParam end) {
 		if (page == null) {
 			page = new IndexParam("1");
 		}
@@ -1038,13 +1040,6 @@ public class AdminController_v1_0 {
 			List<TransactionPOJO> list = (List<TransactionPOJO>) this.httpRequest.getSession().getAttribute(ParamDefine.TRANSACTIONS);
 			if (page.getValue().equals(1) || list == null) {
 				list = new ArrayList<TransactionPOJO>(transDAO.getList(session));
-				Collections.sort(list, new Comparator<TransactionPOJO>() {
-
-					@Override
-					public int compare(TransactionPOJO o1, TransactionPOJO o2) {
-						return o2.getTime().compareTo(o1.getTime());
-					}
-				});
 				this.httpRequest.getSession().setAttribute(ParamDefine.TRANSACTIONS, list);
 			}
 
@@ -1069,6 +1064,61 @@ public class AdminController_v1_0 {
 						jsonItem.addProperty(ParamDefine.ITEM_PHOTO, photoUrl);
 					}
 					jsonTransaction.add(ParamDefine.ITEM, jsonItem);
+
+					transactions.add(jsonTransaction);
+				}
+				jsonResponse.add(ParamDefine.TRANSACTIONS, transactions);
+				jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
+
+				tmpList = null;
+			}
+			else {
+				jsonResponse.add(ParamDefine.RESULT, StatusCode.NO_CONTENT.printStatus());
+			}
+			list = null;
+
+			return jsonResponse.toString();
+		}
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			throw new ProcessException(e);
+		}
+	}
+
+	@GET
+	@Path("/listtransaction")
+	@Produces(value = { MediaType.APPLICATION_JSON })
+	public String listTransactionsNew(@QueryParam(ParamDefine.PAGE) IndexParam page, @QueryParam(ParamDefine.KEYWORD) String keyword,
+	        @QueryParam(ParamDefine.BEGIN) DayParam begin, @QueryParam(ParamDefine.END) DayParam end) {
+		if (page == null) {
+			page = new IndexParam("1");
+		}
+		if (keyword == null) {
+			keyword = "";
+		}
+		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
+		try (ListTransDAO listTransDAO = AbstractDAO.borrowFromPool(DAOPool.listTransPool)) {
+			JsonObject jsonResponse = new JsonObject();
+
+			@SuppressWarnings("unchecked")
+			List<ListTransView> list = (List<ListTransView>) this.httpRequest.getSession().getAttribute(ParamDefine.TRANSACTIONS);
+			if (page.getValue().equals(1) || list == null) {
+				list = listTransDAO.searchByKeyword(session, keyword, begin != null ? begin.getValue() : null, end != null ? end.getValue() : null);
+				this.httpRequest.getSession().setAttribute(ParamDefine.TRANSACTIONS, list);
+			}
+
+			if (list.size() > 0) {
+				List<ListTransView> tmpList = Helper.sortListByIndex(list, page.getValue(), 10); // Default get 10 items per page
+				JsonArray transactions = new JsonArray();
+				for (ListTransView transaction : tmpList) {
+					JsonObject jsonTransaction = JsonTool.toJsonObject(transaction);
+					String photo = transaction.getPhoto();
+					if (photo != null && !photo.isEmpty()) {
+						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
+						        + this.httpRequest.getContextPath() + "/resource/transaction/" + transaction.getIdTransaction() + "/" + photo;
+						jsonTransaction.addProperty(ParamDefine.TRANSACTION_PHOTO, photoUrl);
+					}
 
 					transactions.add(jsonTransaction);
 				}

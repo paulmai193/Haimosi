@@ -7,8 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import logia.utility.json.annotaion.JsonKey;
@@ -63,7 +63,7 @@ public class CreditAccountPOJO implements Serializable {
 
 	/** The user. */
 	@OneToOne(fetch = FetchType.EAGER)
-	@PrimaryKeyJoinColumn
+	@JoinColumn(name = "iduser")
 	private UserPOJO          user;
 
 	/**

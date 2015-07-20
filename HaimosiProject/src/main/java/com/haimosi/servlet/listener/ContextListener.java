@@ -24,7 +24,6 @@ import com.haimosi.define.Config;
 import com.haimosi.define.Constant;
 import com.haimosi.hibernate.dao.ListTransDAO;
 import com.haimosi.hibernate.dao.RoleDAO;
-import com.haimosi.hibernate.pojo.ListTransView;
 import com.haimosi.hibernate.pojo.RolePOJO;
 import com.haimosi.pool.DAOPool;
 import com.haimosi.pool.ThreadPool;
@@ -97,17 +96,14 @@ public class ContextListener implements ServletContextListener {
 					member = null;
 				}
 
-				/*// Check search view not exist, create new one
+				// Check search view not exist, create new one
 				if (listTransDAO.getList(session).size() == 0) {
 					for (String queryString : FileUtils.readLines(new File(FILE_PATH_SQL))) {
 						listTransDAO.updateBySQLQuery(session, queryString);
 					}
 				}
 				// Indexing for luncene solr
-				File indexingDir = new File(Config.resource_lucene_index + ListTransView.class.getCanonicalName());
-				if (!indexingDir.exists()) {
-					HibernateUtil.indexing();
-				}*/
+				// HibernateUtil.indexing();
 
 				HibernateUtil.commitTransaction(session);
 			}

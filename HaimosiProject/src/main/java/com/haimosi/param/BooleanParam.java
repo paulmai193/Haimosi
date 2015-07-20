@@ -29,7 +29,12 @@ public class BooleanParam extends AbstractParam<Boolean> {
 	 */
 	@Override
 	protected Boolean parse(String param) throws Throwable {
-		return Boolean.valueOf(param);
+		if ("1".equalsIgnoreCase(param) || "yes".equalsIgnoreCase(param) || "true".equalsIgnoreCase(param) || "on".equalsIgnoreCase(param)) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 }

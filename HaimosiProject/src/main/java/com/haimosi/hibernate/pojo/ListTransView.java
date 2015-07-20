@@ -11,23 +11,6 @@ import javax.persistence.Table;
 
 import logia.utility.json.annotaion.JsonKey;
 
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.WhitespaceTokenizerFactory;
-import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
-import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilterFactory;
-import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.AnalyzerDef;
-import org.hibernate.search.annotations.AnalyzerDefs;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Index;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Parameter;
-import org.hibernate.search.annotations.Store;
-import org.hibernate.search.annotations.TokenFilterDef;
-import org.hibernate.search.annotations.TokenizerDef;
-
 import com.haimosi.define.Constant;
 import com.haimosi.param.ParamDefine;
 
@@ -37,18 +20,29 @@ import com.haimosi.param.ParamDefine;
  * @author Paul Mai
  */
 @Entity
-@Table(name = "transaction", catalog = "paulmai")
+@Table(name = "listtransview", catalog = "paulmai")
 @logia.utility.json.annotaion.JsonObject
-@Indexed
-@AnalyzerDefs(value = { @AnalyzerDef(name = "index", tokenizer = @TokenizerDef(factory = WhitespaceTokenizerFactory.class), filters = {
-        @TokenFilterDef(factory = WordDelimiterFilterFactory.class, params = { @Parameter(name = "generateWordParts", value = "1"),
-                @Parameter(name = "generateNumberParts", value = "1"), @Parameter(name = "catenateWords", value = "1"),
-                @Parameter(name = "catenateNumbers", value = "1"), @Parameter(name = "catenateAll", value = "0"),
-                @Parameter(name = "splitOnCaseChange", value = "1") }),
-        @TokenFilterDef(factory = LowerCaseFilterFactory.class),
-        @TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
-        @TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "English"),
-                @Parameter(name = "protected", value = "protwords.txt") }) }), })
+/*
+ * @Indexed
+ * 
+ * @AnalyzerDefs(value = { @AnalyzerDef(name = "index", tokenizer = @TokenizerDef(factory = WhitespaceTokenizerFactory.class), filters = {
+ * 
+ * @TokenFilterDef(factory = WordDelimiterFilterFactory.class, params = { @Parameter(name = "generateWordParts", value = "1"),
+ * 
+ * @Parameter(name = "generateNumberParts", value = "1"), @Parameter(name = "catenateWords", value = "1"),
+ * 
+ * @Parameter(name = "catenateNumbers", value = "1"), @Parameter(name = "catenateAll", value = "0"),
+ * 
+ * @Parameter(name = "splitOnCaseChange", value = "1") }),
+ * 
+ * @TokenFilterDef(factory = LowerCaseFilterFactory.class),
+ * 
+ * @TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
+ * 
+ * @TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "English"),
+ * 
+ * @Parameter(name = "protected", value = "protwords.txt") }) }), })
+ */
 public class ListTransView implements Serializable {
 
 	/** The Constant serialVersionUID. */
@@ -56,6 +50,7 @@ public class ListTransView implements Serializable {
 
 	/** The id transaction. */
 	@Id
+	@Column(name = "idtransaction", nullable = false)
 	@JsonKey(key = ParamDefine.TRANSACTION_ID)
 	private int               idTransaction;
 
@@ -70,6 +65,9 @@ public class ListTransView implements Serializable {
 	private float             amount;
 
 	/** The time. */
+	@Column(name = "time", nullable = false)
+	// @Field(index = Index.YES)
+	// @DateBridge(resolution = Resolution.SECOND)
 	private Date              time;
 
 	/** The photo. */
@@ -88,8 +86,8 @@ public class ListTransView implements Serializable {
 
 	/** The name. */
 	@JsonKey(key = ParamDefine.ITEM_NAME)
-	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
-	@Analyzer(definition = "index")
+	// @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
+	// @Analyzer(definition = "index")
 	private String            name;
 
 	/** The unit. */

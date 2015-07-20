@@ -5,6 +5,8 @@ public final class ParamDefine {
 	public static final String AMOUNT                  = "amount";
 	public static final String AVATAR                  = "avatar";
 
+	public static final String BEGIN                   = "begin";
+
 	public static final String CARD_ID                 = "cardid";
 	public static final String CARD_NAME               = "cardname";
 	public static final String CARD_NUMBER             = "cardnumber";
@@ -12,9 +14,11 @@ public final class ParamDefine {
 	public static final String COMMAND                 = "command";
 
 	public static final String EMAIL                   = "email";
+	public static final String END                     = "end";
 	public static final String EXPIRE                  = "expire";
 
 	public static final String FIRST_NAME              = "firstname";
+	public static final String FIRST_TIME_USE          = "firstuse";
 
 	public static final String HIBERNATE_SESSION       = "hibernatesession";
 

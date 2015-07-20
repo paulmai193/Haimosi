@@ -5,6 +5,10 @@
 	<artifactId>haimosi</artifactId>
 	<version>1.0.0626</version>
 	<packaging>war</packaging>
+	<properties>
+		<sonar.host.url>http://localhost:9000/</sonar.host.url>
+		<sonar.exclusions></sonar.exclusions>
+	</properties>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test</testSourceDirectory>
