@@ -19,6 +19,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import logia.hibernate.dao.AbstractDAO;
+import logia.hibernate.util.HibernateUtil;
 
 import org.hibernate.Session;
 
@@ -72,6 +73,9 @@ public class AuthenAppsFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
+		Session session = HibernateUtil.beginTransaction();
+		req.setAttribute(ParamDefine.HIBERNATE_SESSION, session);
+
 		String reqPath = req.getRequestURI();
 		if (this.checkPath(reqPath) == false) {
 			Integer idUser = (Integer) req.getSession().getAttribute(ParamDefine.USER);
@@ -80,7 +84,7 @@ public class AuthenAppsFilter implements Filter {
 				String curToken = (String) req.getSession().getAttribute(ParamDefine.TOKEN);
 				String trueToken = AuthenAppsFilter._clientMap.get(idUser);
 				if (curToken.equals(trueToken)) {
-					Session session = (Session) req.getAttribute(ParamDefine.HIBERNATE_SESSION);
+					// Session session = (Session) req.getAttribute(ParamDefine.HIBERNATE_SESSION);
 					try (UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
 						UserPOJO user = userDAO.get(session, idUser);
 						if (user != null) {
@@ -107,7 +111,7 @@ public class AuthenAppsFilter implements Filter {
 						System.err.println(e.getMessage());
 						e.printStackTrace();
 						RequestDispatcher dispatcher = req.getRequestDispatcher("/errorhander?errorcode=" + StatusCode.INTERNAL_ERROR.getCode()
-								+ "&errormessage=" + e.getMessage());
+						        + "&errormessage=" + e.getMessage());
 						dispatcher.forward(request, response);
 					}
 				}

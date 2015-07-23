@@ -27,15 +27,16 @@ public class RequestListener implements ServletRequestListener {
 	 */
 	@Override
 	public void requestDestroyed(ServletRequestEvent requestEvent) {
-		try {
-			Session session = (Session) requestEvent.getServletRequest().getAttribute(ParamDefine.HIBERNATE_SESSION);
-			HibernateUtil.closeSession(session);
-			requestEvent.getServletRequest().removeAttribute(ParamDefine.HIBERNATE_SESSION);
+		Session session = (Session) requestEvent.getServletRequest().getAttribute(ParamDefine.HIBERNATE_SESSION);
+		if (session != null) {
+			try {
+				HibernateUtil.closeSession(session);
+				requestEvent.getServletRequest().removeAttribute(ParamDefine.HIBERNATE_SESSION);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	/*
@@ -45,12 +46,12 @@ public class RequestListener implements ServletRequestListener {
 	 */
 	@Override
 	public void requestInitialized(ServletRequestEvent requestEvent) {
-		try {
-			requestEvent.getServletRequest().setAttribute(ParamDefine.HIBERNATE_SESSION, HibernateUtil.beginTransaction());
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		// try {
+		// requestEvent.getServletRequest().setAttribute(ParamDefine.HIBERNATE_SESSION, HibernateUtil.beginTransaction());
+		// }
+		// catch (Exception e) {
+		// e.printStackTrace();
+		// } ----- NOT INIT FOR EVERY REQUEST, USE INIT IN AUTHEN-FILTER FOR API USING
 
 	}
 
