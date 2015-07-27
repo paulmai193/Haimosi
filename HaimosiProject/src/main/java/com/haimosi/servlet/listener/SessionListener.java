@@ -40,7 +40,6 @@ public class SessionListener implements HttpSessionListener {
 			AuthenAppsFilter._clientMap.remove(idUser);
 			InBoundClient._clientSessionMap.remove(idUser);
 		}
-		System.gc();
 	}
 
 }

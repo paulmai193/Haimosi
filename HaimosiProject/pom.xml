@@ -121,12 +121,5 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- end Websocket -->
-		<!-- Java melody -->
-		<dependency>
-			<groupId>net.bull.javamelody</groupId>
-			<artifactId>javamelody-core</artifactId>
-			<version>1.56.0</version>
-		</dependency>
-		<!-- end Java melody -->
 	</dependencies>
 </project>
