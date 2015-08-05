@@ -11,7 +11,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import logia.utility.string.EncryptionUtils;
+import logia.utility.string.EncryptionUtil;
 
 import com.haimosi.define.Config;
 
@@ -43,7 +43,7 @@ public class ForwardLinkFilter implements Filter {
 		String action = req.getParameter("a");
 		if (action.equalsIgnoreCase("activation")) {
 			String code = req.getParameter("s");
-			code = EncryptionUtils.decode(code, Config.encrypt_password);
+			code = EncryptionUtil.decode(code, Config.encrypt_password);
 			String iduser = req.getParameter("i");
 
 			System.out.println("/api/v1.0/apps/account/activate?verifycode=" + code + "&user=" + iduser);

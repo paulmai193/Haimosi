@@ -2,7 +2,7 @@ package com.haimosi.websocket.data;
 
 import java.text.ParseException;
 
-import logia.utility.json.JsonTool;
+import logia.utility.json.JsonUtil;
 import logia.utility.json.annotaion.JsonKey;
 
 import com.google.gson.JsonObject;
@@ -103,7 +103,7 @@ public class MessageConfirmTransaction implements MessageInterface {
 	 */
 	@Override
 	public JsonObject toJson() {
-		return JsonTool.toJsonObject(this);
+		return JsonUtil.toJsonObject(this);
 	}
 
 }

@@ -21,9 +21,10 @@ import javax.ws.rs.core.MediaType;
 
 import logia.hibernate.dao.AbstractDAO;
 import logia.hibernate.util.HibernateUtil;
+import logia.utility.collection.CollectionUtil;
 import logia.utility.filechecker.ImageChecker;
 import logia.utility.image.ScaleImage;
-import logia.utility.json.JsonTool;
+import logia.utility.json.JsonUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Session;
@@ -60,7 +61,6 @@ import com.haimosi.param.IntegerParam;
 import com.haimosi.param.ParamDefine;
 import com.haimosi.param.StringNotEmptyParam;
 import com.haimosi.pool.DAOPool;
-import com.haimosi.util.Helper;
 import com.haimosi.websocket.data.MessageConfirmAcceptTrans;
 import com.haimosi.websocket.data.MessageConfirmTransaction;
 import com.haimosi.websocket.data.MessageUpdateItem;
@@ -125,7 +125,7 @@ public class AdminController_v1_0 {
 				}
 				else {
 					jsonResponse.add(ParamDefine.RESULT,
-							StatusCode.NO_CONTENT.printStatus("Transaction ID " + id.getOriginalParam() + " payment was accepted before"));
+					        StatusCode.NO_CONTENT.printStatus("Transaction ID " + id.getOriginalParam() + " payment was accepted before"));
 				}
 			}
 			else {
@@ -198,8 +198,8 @@ public class AdminController_v1_0 {
 		}
 
 		try (InputStream fileStream = fileBody.getValueAs(InputStream.class);
-				ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool);
-				UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
+		        ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool);
+		        UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
 			JsonObject jsonResponse = new JsonObject();
 
 			// Create item record
@@ -345,7 +345,7 @@ public class AdminController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String addScale(@FormParam(ParamDefine.SCALE_METTA) String metta, @FormParam(ParamDefine.SCALE_PARAMETER) String parameter,
-			@FormParam(ParamDefine.SCALE_POSITION) String position, @FormParam(ParamDefine.SCALE_SPECIFICATION) String specification) {
+	        @FormParam(ParamDefine.SCALE_POSITION) String position, @FormParam(ParamDefine.SCALE_SPECIFICATION) String specification) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 
 		try (ScaleDAO scaleDAO = AbstractDAO.borrowFromPool(DAOPool.scalePool)) {
@@ -393,8 +393,8 @@ public class AdminController_v1_0 {
 		}
 
 		try (InputStream fileStream = fileBody.getValueAs(InputStream.class);
-				ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool);
-				UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
+		        ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool);
+		        UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
 
 			JsonObject jsonResponse = new JsonObject();
 
@@ -493,7 +493,7 @@ public class AdminController_v1_0 {
 	public String changeUserStatus(@FormParam(ParamDefine.USER_ID) IntegerParam idUser, @FormParam(ParamDefine.STATUS) ByteParam status) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		if (status == null || !status.getValue().equals(Constant.USER_STATUS_ACTIVATE) || !status.getValue().equals(Constant.USER_STATUS_INACTIVATE)
-				|| !status.getValue().equals(Constant.USER_STATUS_LOCKED)) {
+		        || !status.getValue().equals(Constant.USER_STATUS_LOCKED)) {
 			throw new BadParamException(new Throwable("Invalid status value"));
 		}
 		try (UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
@@ -694,8 +694,8 @@ public class AdminController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String editAccount(@FormParam(ParamDefine.CARD_ID) IntegerParam idCard, @FormParam(ParamDefine.CARD_NAME) StringNotEmptyParam cardName,
-			@FormParam(ParamDefine.CARD_NUMBER) StringNotEmptyParam cardNumber, @FormParam(ParamDefine.CVV_NUMBER) StringNotEmptyParam cvvNumber,
-			@FormParam(ParamDefine.EXPIRE) CreditExpireParam expireDay) {
+	        @FormParam(ParamDefine.CARD_NUMBER) StringNotEmptyParam cardNumber, @FormParam(ParamDefine.CVV_NUMBER) StringNotEmptyParam cvvNumber,
+	        @FormParam(ParamDefine.EXPIRE) CreditExpireParam expireDay) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (CreditAccountDAO creditDAO = AbstractDAO.borrowFromPool(DAOPool.creditPool)) {
 			JsonObject jsonResponse = new JsonObject();
@@ -723,7 +723,7 @@ public class AdminController_v1_0 {
 			}
 			else {
 				jsonResponse.add(ParamDefine.RESULT,
-						StatusCode.NO_CONTENT.printStatus("Cannot find credit account with ID " + idCard.getOriginalParam()));
+				        StatusCode.NO_CONTENT.printStatus("Cannot find credit account with ID " + idCard.getOriginalParam()));
 			}
 
 			return jsonResponse.toString();
@@ -752,9 +752,9 @@ public class AdminController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String editItem(@FormParam(ParamDefine.ITEM_ID) IntegerParam idItem, @FormParam(ParamDefine.ITEM_DESCRIPTION) String desc,
-			@FormParam(ParamDefine.ITEM_NAME) StringNotEmptyParam name, @FormParam(ParamDefine.ITEM_PRICE) FloatParam price,
-			@FormParam(ParamDefine.ITEM_UNIT) StringNotEmptyParam unit, @FormParam(ParamDefine.ITEM_BASIC_AMOUNT) FloatParam basicAmount,
-			@FormParam(ParamDefine.IS_PRIMARY) BooleanParam isPrimary) {
+	        @FormParam(ParamDefine.ITEM_NAME) StringNotEmptyParam name, @FormParam(ParamDefine.ITEM_PRICE) FloatParam price,
+	        @FormParam(ParamDefine.ITEM_UNIT) StringNotEmptyParam unit, @FormParam(ParamDefine.ITEM_BASIC_AMOUNT) FloatParam basicAmount,
+	        @FormParam(ParamDefine.IS_PRIMARY) BooleanParam isPrimary) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool); UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
 
@@ -778,9 +778,16 @@ public class AdminController_v1_0 {
 					item.setBasicAmount(basicAmount.getValue());
 				}
 				if (isPrimary != null) {
+					if (isPrimary.getValue().equals(true)) {
+						// Reverse current primary item to non-primary
+						for (ItemPOJO primaryItem : itemDAO.getListPrimaries(session)) {
+							primaryItem.setPrimary(false);
+							itemDAO.update(session, primaryItem);
+						}
+					}
 					item.setPrimary(isPrimary.getValue());
 				}
-				itemDAO.saveOrUpdate(session, item);
+				itemDAO.update(session, item);
 				HibernateUtil.commitTransaction(session);
 
 				item = null;
@@ -829,7 +836,7 @@ public class AdminController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String editLight(@FormParam(ParamDefine.LIGHT_ID) IntegerParam id, @FormParam(ParamDefine.LIGHT_PORT) IntegerParam port,
-			@FormParam(ParamDefine.LIGHT_COLOR) String color) {
+	        @FormParam(ParamDefine.LIGHT_COLOR) String color) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 
 		try (LightDAO lightDAO = AbstractDAO.borrowFromPool(DAOPool.lightPool)) {
@@ -876,8 +883,8 @@ public class AdminController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String editProfile(@FormParam(ParamDefine.USER_ID) IntegerParam idUser, @FormParam(ParamDefine.FIRST_NAME) StringNotEmptyParam firstName,
-			@FormParam(ParamDefine.LAST_NAME) StringNotEmptyParam lastName, @FormParam(ParamDefine.PHONE) ContactParam phone,
-			@FormParam(ParamDefine.EMAIL) ContactParam email) {
+	        @FormParam(ParamDefine.LAST_NAME) StringNotEmptyParam lastName, @FormParam(ParamDefine.PHONE) ContactParam phone,
+	        @FormParam(ParamDefine.EMAIL) ContactParam email) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
 			JsonObject jsonResponse = new JsonObject();
@@ -939,8 +946,8 @@ public class AdminController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String editScale(@FormParam(ParamDefine.SCALE_ID) IntegerParam id, @FormParam(ParamDefine.SCALE_METTA) String metta,
-			@FormParam(ParamDefine.SCALE_PARAMETER) String parameter, @FormParam(ParamDefine.SCALE_POSITION) String position,
-			@FormParam(ParamDefine.SCALE_SPECIFICATION) String specification) {
+	        @FormParam(ParamDefine.SCALE_PARAMETER) String parameter, @FormParam(ParamDefine.SCALE_POSITION) String position,
+	        @FormParam(ParamDefine.SCALE_SPECIFICATION) String specification) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 
 		try (ScaleDAO scaleDAO = AbstractDAO.borrowFromPool(DAOPool.scalePool)) {
@@ -996,7 +1003,7 @@ public class AdminController_v1_0 {
 			// for (ScalePOJO scale : scales) {
 			// array.add(scale.toJson());
 			// }
-			jsonResponse.add(ParamDefine.SCALES, JsonTool.toJsonArray(scales.toArray()));
+			jsonResponse.add(ParamDefine.SCALES, JsonUtil.toJsonArray(scales.toArray()));
 			scales = null;
 
 			// array = new JsonArray();
@@ -1004,7 +1011,7 @@ public class AdminController_v1_0 {
 			// for (LightPOJO light : lights) {
 			// array.add(light.toJson());
 			// }
-			jsonResponse.add(ParamDefine.LIGHTS, JsonTool.toJsonArray(lights.toArray()));
+			jsonResponse.add(ParamDefine.LIGHTS, JsonUtil.toJsonArray(lights.toArray()));
 			lights = null;
 
 			jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
@@ -1028,7 +1035,7 @@ public class AdminController_v1_0 {
 	@Path("/listtransaction_old")
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String listTransactions(@QueryParam(ParamDefine.PAGE) IndexParam page, @QueryParam(ParamDefine.KEYWORD) String keyword,
-			@QueryParam(ParamDefine.BEGIN) DayParam begin, @QueryParam(ParamDefine.END) DayParam end) {
+	        @QueryParam(ParamDefine.BEGIN) DayParam begin, @QueryParam(ParamDefine.END) DayParam end) {
 		if (page == null) {
 			page = new IndexParam("1");
 		}
@@ -1044,23 +1051,23 @@ public class AdminController_v1_0 {
 			}
 
 			if (list.size() > 0) {
-				List<TransactionPOJO> tmpList = Helper.sortListByIndex(list, page.getValue(), 10); // Default get 10 items per page
+				List<TransactionPOJO> tmpList = CollectionUtil.sortListByPage(list, page.getValue(), 10); // Default get 10 items per page
 				JsonArray transactions = new JsonArray();
 				for (TransactionPOJO transaction : tmpList) {
-					JsonObject jsonTransaction = JsonTool.toJsonObject(transaction);
+					JsonObject jsonTransaction = JsonUtil.toJsonObject(transaction);
 					String photo = transaction.getPhoto();
 					if (photo != null && !photo.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-								+ this.httpRequest.getContextPath() + "/resource/transaction/" + transaction.getIdTransaction().toString() + "/"
-								+ photo;
+						        + this.httpRequest.getContextPath() + "/resource/transaction/" + transaction.getIdTransaction().toString() + "/"
+						        + photo;
 						jsonTransaction.addProperty(ParamDefine.TRANSACTION_PHOTO, photoUrl);
 					}
 					ItemPOJO item = transaction.getItem();
-					JsonObject jsonItem = JsonTool.toJsonObject(item);
+					JsonObject jsonItem = JsonUtil.toJsonObject(item);
 					String photoItem = item.getPhoto();
 					if (photoItem != null && !photoItem.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-								+ this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photoItem;
+						        + this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photoItem;
 						jsonItem.addProperty(ParamDefine.ITEM_PHOTO, photoUrl);
 					}
 					jsonTransaction.add(ParamDefine.ITEM, jsonItem);
@@ -1090,7 +1097,7 @@ public class AdminController_v1_0 {
 	@Path("/listtransaction")
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String listTransactionsNew(@QueryParam(ParamDefine.PAGE) IndexParam page, @QueryParam(ParamDefine.KEYWORD) String keyword,
-			@QueryParam(ParamDefine.BEGIN) DayParam begin, @QueryParam(ParamDefine.END) DayParam end) {
+	        @QueryParam(ParamDefine.BEGIN) DayParam begin, @QueryParam(ParamDefine.END) DayParam end) {
 		if (page == null) {
 			page = new IndexParam("1");
 		}
@@ -1109,14 +1116,14 @@ public class AdminController_v1_0 {
 			}
 
 			if (list.size() > 0) {
-				List<ListTransView> tmpList = Helper.sortListByIndex(list, page.getValue(), 10); // Default get 10 items per page
+				List<ListTransView> tmpList = CollectionUtil.sortListByPage(list, page.getValue(), 10); // Default get 10 items per page
 				JsonArray transactions = new JsonArray();
 				for (ListTransView transaction : tmpList) {
-					JsonObject jsonTransaction = JsonTool.toJsonObject(transaction);
+					JsonObject jsonTransaction = JsonUtil.toJsonObject(transaction);
 					String photo = transaction.getPhoto();
 					if (photo != null && !photo.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-								+ this.httpRequest.getContextPath() + "/resource/transaction/" + transaction.getIdTransaction() + "/" + photo;
+						        + this.httpRequest.getContextPath() + "/resource/transaction/" + transaction.getIdTransaction() + "/" + photo;
 						jsonTransaction.addProperty(ParamDefine.TRANSACTION_PHOTO, photoUrl);
 					}
 
@@ -1156,11 +1163,11 @@ public class AdminController_v1_0 {
 			JsonObject jsonResponse = new JsonObject();
 			JsonArray users = new JsonArray();
 			for (UserPOJO user : userDAO.getList(session)) {
-				JsonObject jsonUser = JsonTool.toJsonObject(user);
+				JsonObject jsonUser = JsonUtil.toJsonObject(user);
 				CreditAccountPOJO credit = user.getCreditAccount();
 				if (credit != null) {
-					JsonObject jsonCredit = JsonTool.toJsonObject(user.getCreditAccount());
-					users.add(JsonTool.mergeJson(jsonUser, jsonCredit));
+					JsonObject jsonCredit = JsonUtil.toJsonObject(user.getCreditAccount());
+					users.add(JsonUtil.mergeJson(jsonUser, jsonCredit));
 				}
 				else {
 					users.add(jsonUser);
@@ -1203,7 +1210,7 @@ public class AdminController_v1_0 {
 		Integer idTrans = Integer.valueOf(idTransPart.getValue());
 
 		try (InputStream fileStream = fileBody.getValueAs(InputStream.class);
-				TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);) {
+		        TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);) {
 			JsonObject jsonResponse = new JsonObject();
 
 			byte[] bytes = IOUtils.toByteArray(fileStream);
@@ -1236,7 +1243,7 @@ public class AdminController_v1_0 {
 
 						// Push this photo url to USER
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-								+ this.httpRequest.getContextPath() + "/resource/transaction/" + idTrans.toString() + "/" + nameTrans;
+						        + this.httpRequest.getContextPath() + "/resource/transaction/" + idTrans.toString() + "/" + nameTrans;
 
 						TransConfirmContent content = new TransConfirmContent(idTrans, photoUrl);
 						MessageConfirmTransaction message = new MessageConfirmTransaction();
@@ -1260,7 +1267,7 @@ public class AdminController_v1_0 {
 					}
 					else {
 						jsonResponse.add(ParamDefine.RESULT,
-								StatusCode.BAD_PARAM.printStatus("Cannot find transaction with ID " + idTrans.toString()));
+						        StatusCode.BAD_PARAM.printStatus("Cannot find transaction with ID " + idTrans.toString()));
 
 						fileTrans.delete();
 						directoryTrans = null;

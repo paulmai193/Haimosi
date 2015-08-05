@@ -2,7 +2,7 @@ package com.haimosi.websocket.data;
 
 import logia.hibernate.dao.AbstractDAO;
 import logia.hibernate.util.HibernateUtil;
-import logia.utility.json.JsonTool;
+import logia.utility.json.JsonUtil;
 import logia.utility.json.annotaion.JsonKey;
 
 import org.hibernate.Session;
@@ -141,7 +141,7 @@ public class MessageLogin implements MessageInterface {
 	 */
 	@Override
 	public JsonObject toJson() {
-		return JsonTool.toJsonObject(this);
+		return JsonUtil.toJsonObject(this);
 	}
 
 }

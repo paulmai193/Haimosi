@@ -1,6 +1,6 @@
 package com.haimosi.param;
 
-import logia.utility.string.StringUtils;
+import logia.utility.string.StringUtil;
 
 import com.haimosi.exception.BadParamException;
 
@@ -28,7 +28,7 @@ public class KeywordsParam extends AbstractParam<String> {
 	 */
 	@Override
 	protected String parse(String param) throws Throwable {
-		String keywords = StringUtils.removeAccentLowerCase(param).trim();
+		String keywords = StringUtil.removeAccentLowerCase(param).trim();
 		return keywords;
 	}
 

@@ -16,7 +16,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import logia.hibernate.dao.AbstractDAO;
-import logia.utility.json.JsonTool;
+import logia.utility.collection.CollectionUtil;
+import logia.utility.json.JsonUtil;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.Session;
@@ -32,7 +33,6 @@ import com.haimosi.param.IndexParam;
 import com.haimosi.param.IntegerParam;
 import com.haimosi.param.ParamDefine;
 import com.haimosi.pool.DAOPool;
-import com.haimosi.util.Helper;
 
 /**
  * The Class ItemController_v1_0.
@@ -152,14 +152,14 @@ public class ItemController_v1_0 {
 			});
 
 			if (list.size() > 0) {
-				list = Helper.sortListByIndex(list, page.getValue(), 10); // Default get 10 items per page
+				list = CollectionUtil.sortListByPage(list, page.getValue(), 10); // Default get 10 items per page
 				JsonArray items = new JsonArray();
 				for (ItemPOJO item : list) {
-					JsonObject jsonItem = JsonTool.toJsonObject(item);
+					JsonObject jsonItem = JsonUtil.toJsonObject(item);
 					String photo = item.getPhoto();
 					if (photo != null && !photo.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-								+ this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photo;
+						        + this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photo;
 						jsonItem.addProperty(ParamDefine.ITEM_PHOTO, photoUrl);
 					}
 

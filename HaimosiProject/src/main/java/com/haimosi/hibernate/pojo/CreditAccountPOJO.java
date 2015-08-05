@@ -12,7 +12,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import logia.utility.json.annotaion.JsonKey;
-import logia.utility.string.EncryptionUtils;
+import logia.utility.string.EncryptionUtil;
 
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -96,7 +96,7 @@ public class CreditAccountPOJO implements Serializable {
 	 * @return the cardName
 	 */
 	public String getCardName() {
-		String s = EncryptionUtils.decode(this.cardName, Config.encrypt_password);
+		String s = EncryptionUtil.decode(this.cardName, Config.encrypt_password);
 		if (s != null) {
 			return s;
 		}
@@ -111,7 +111,7 @@ public class CreditAccountPOJO implements Serializable {
 	 * @return the cardNumber
 	 */
 	public String getCardNumber() {
-		String s = EncryptionUtils.decode(this.cardNumber, Config.encrypt_password);
+		String s = EncryptionUtil.decode(this.cardNumber, Config.encrypt_password);
 		if (s != null) {
 			return s;
 		}
@@ -126,7 +126,7 @@ public class CreditAccountPOJO implements Serializable {
 	 * @return the cvvNumber
 	 */
 	public String getCvvNumber() {
-		String s = EncryptionUtils.decode(this.cvvNumber, Config.encrypt_password);
+		String s = EncryptionUtil.decode(this.cvvNumber, Config.encrypt_password);
 		if (s != null) {
 			return s;
 		}
@@ -141,7 +141,7 @@ public class CreditAccountPOJO implements Serializable {
 	 * @return the expireDate
 	 */
 	public String getExpireDate() {
-		String s = EncryptionUtils.decode(this.expireDate, Config.encrypt_password);
+		String s = EncryptionUtil.decode(this.expireDate, Config.encrypt_password);
 		if (s != null) {
 			return s;
 		}
@@ -174,7 +174,7 @@ public class CreditAccountPOJO implements Serializable {
 	 * @param cardName the cardName to set
 	 */
 	public void setCardName(String cardName) {
-		String s = EncryptionUtils.encode(cardName, Config.encrypt_password);
+		String s = EncryptionUtil.encode(cardName, Config.encrypt_password);
 		if (s != null) {
 			this.cardName = s;
 		}
@@ -189,7 +189,7 @@ public class CreditAccountPOJO implements Serializable {
 	 * @param cardNumber the cardNumber to set
 	 */
 	public void setCardNumber(String cardNumber) {
-		String s = EncryptionUtils.encode(cardNumber, Config.encrypt_password);
+		String s = EncryptionUtil.encode(cardNumber, Config.encrypt_password);
 		if (s != null) {
 			this.cardNumber = s;
 		}
@@ -204,7 +204,7 @@ public class CreditAccountPOJO implements Serializable {
 	 * @param cvvNumber the cvvNumber to set
 	 */
 	public void setCvvNumber(String cvvNumber) {
-		String s = EncryptionUtils.encode(cvvNumber, Config.encrypt_password);
+		String s = EncryptionUtil.encode(cvvNumber, Config.encrypt_password);
 		if (s != null) {
 			this.cvvNumber = s;
 		}
@@ -219,7 +219,7 @@ public class CreditAccountPOJO implements Serializable {
 	 * @param expireDate the expireDate to set
 	 */
 	public void setExpireDate(String expireDate) {
-		String s = EncryptionUtils.encode(expireDate, Config.encrypt_password);
+		String s = EncryptionUtil.encode(expireDate, Config.encrypt_password);
 		if (s != null) {
 			this.expireDate = s;
 		}

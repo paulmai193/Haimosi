@@ -22,9 +22,9 @@ import logia.hibernate.dao.AbstractDAO;
 import logia.hibernate.util.HibernateUtil;
 import logia.utility.filechecker.ImageChecker;
 import logia.utility.image.ScaleImage;
-import logia.utility.json.JsonTool;
+import logia.utility.json.JsonUtil;
 import logia.utility.readfile.FileUtil;
-import logia.utility.string.EncryptionUtils;
+import logia.utility.string.EncryptionUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -416,7 +416,7 @@ public class AccountController_v1_0 {
 			UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 			CreditAccountPOJO account = user.getCreditAccount();
 			if (account != null) {
-				jsonResponse = JsonTool.toJsonObject(account);
+				jsonResponse = JsonUtil.toJsonObject(account);
 				jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 			}
 			else {
@@ -443,7 +443,7 @@ public class AccountController_v1_0 {
 		JsonObject jsonResponse = new JsonObject();
 		try {
 			UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
-			jsonResponse = JsonTool.toJsonObject(user);
+			jsonResponse = JsonUtil.toJsonObject(user);
 			String avatarUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
 			        + this.httpRequest.getContextPath() + "/resource/avatar/" + user.getIdUser().toString() + "/" + user.getAvatar();
 			jsonResponse.addProperty(ParamDefine.AVATAR, avatarUrl);
@@ -591,7 +591,7 @@ public class AccountController_v1_0 {
 
 						// Generate activation link and send to register account
 						String nameRecipients = firstName.getValue() + " " + lastName.getValue();
-						String enVerifyCode = EncryptionUtils.encode(verifyCode, Config.encrypt_password);
+						String enVerifyCode = EncryptionUtil.encode(verifyCode, Config.encrypt_password);
 						String link = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
 						        + this.httpRequest.getContextPath() + "/link?a=activation&s=" + enVerifyCode + "&i=" + idUser.toString();
 

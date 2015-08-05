@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import logia.utility.json.JsonTool;
+import logia.utility.json.JsonUtil;
 import logia.utility.json.annotaion.JsonKey;
 
 import com.google.gson.JsonObject;
@@ -154,6 +154,6 @@ public class TransactionContent {
 	 * @return the json object
 	 */
 	public JsonObject toJson() {
-		return JsonTool.toJsonObject(this);
+		return JsonUtil.toJsonObject(this);
 	}
 }
