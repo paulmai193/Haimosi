@@ -23,6 +23,7 @@ import logia.hibernate.util.HibernateUtil;
 import logia.utility.collection.CollectionUtil;
 import logia.utility.json.JsonUtil;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.google.gson.JsonArray;
@@ -43,10 +44,12 @@ import com.haimosi.param.IndexParam;
 import com.haimosi.param.IntegerParam;
 import com.haimosi.param.ParamDefine;
 import com.haimosi.pool.DAOPool;
+import com.haimosi.util.Payment;
 import com.haimosi.websocket.data.MessageAcceptTrans;
 import com.haimosi.websocket.data.MessagePushTransaction;
 import com.haimosi.websocket.data.TransactionContent;
 import com.haimosi.websocket.endpoint.WSEndpoint;
+import com.stripe.model.Charge;
 
 /**
  * The Class TransactionController_v1_0.
@@ -56,9 +59,12 @@ import com.haimosi.websocket.endpoint.WSEndpoint;
 @Path("/api/v1.0/apps/transaction")
 public class TransactionController_v1_0 {
 
+	/** The logger. */
+	private final Logger LOGGER = Logger.getLogger(this.getClass());
+
 	/** The http request. */
 	@Context
-	HttpServletRequest httpRequest;
+	HttpServletRequest   httpRequest;
 
 	/**
 	 * Accept the transaction.
@@ -86,10 +92,29 @@ public class TransactionController_v1_0 {
 					transDAO.update(session, trans);
 					HibernateUtil.commitTransaction(session);
 
+					/* Call payment api if payment method in app, and set payment status */
+					byte status;
+					if (method.getValue().equals(Constant.PAYMENT_APP)) {
+						Payment payment = new Payment(user.getCreditAccount().getCardNumber(), user.getCreditAccount().getExpireDate(), user
+						        .getCreditAccount().getCvvNumber(), (int) trans.getAmount(), "aud", "Pay for Haimosi's goods");
+						Charge charge = payment.doPayment();
+						if (charge.getStatus().equals("succeeded")) {
+							status = 1;
+						}
+						else {
+							status = 0;
+						}
+					}
+					else {
+						status = 1; // Success when payment method is cash
+					}
+
+					/* Notify to administrator */
 					MessageAcceptTrans message = new MessageAcceptTrans();
 					message.setCommand(Constant.SOCKET_COMMAND_ACCEPT_TRANS);
 					message.setTransid(idTrans.getValue());
 					message.setMethod(method.getValue());
+					message.setStatus(status);
 					RolePOJO adminRole = roleDAO.get(session, Constant.USER_ROLE_ADMIN);
 					Set<UserPOJO> admins = adminRole.getUsers();
 					for (UserPOJO admin : admins) {
@@ -99,7 +124,7 @@ public class TransactionController_v1_0 {
 								adminSocket.echoMessage(message);
 							}
 							catch (Exception e) {
-								e.printStackTrace();
+								this.LOGGER.error(e.getMessage(), e);
 							}
 
 						}
@@ -120,8 +145,7 @@ public class TransactionController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}
@@ -158,8 +182,7 @@ public class TransactionController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}
@@ -211,7 +234,7 @@ public class TransactionController_v1_0 {
 							adminSocket.echoMessage(push);
 						}
 						catch (Exception e) {
-							e.printStackTrace();
+							this.LOGGER.error(e.getMessage(), e);
 						}
 
 					}
@@ -229,8 +252,7 @@ public class TransactionController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}
@@ -329,8 +351,7 @@ public class TransactionController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			throw new ProcessException(e);
 		}
 	}
@@ -366,8 +387,7 @@ public class TransactionController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}

@@ -11,12 +11,17 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.log4j.Logger;
+
 /**
  * The Class EmailProcess.
  * 
  * @author Paul Mai
  */
 public final class EmailProcess {
+
+	/** The logger. */
+	private final Logger   LOGGER = Logger.getLogger(this.getClass());
 
 	/** The password. */
 	private static String  password;
@@ -63,8 +68,7 @@ public final class EmailProcess {
 			return true;
 		}
 		catch (MessagingException e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			return false;
 		}
 	}
@@ -79,8 +83,7 @@ public final class EmailProcess {
 			props.load(new FileInputStream(propFile));
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 		}
 		EmailProcess.username = props.getProperty("email.username");
 		EmailProcess.password = props.getProperty("email.password");

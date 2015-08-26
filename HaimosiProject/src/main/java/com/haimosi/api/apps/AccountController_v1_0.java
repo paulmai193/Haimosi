@@ -28,6 +28,7 @@ import logia.utility.string.EncryptionUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.google.gson.JsonObject;
@@ -63,9 +64,12 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 @Path("/api/v1.0/apps/account")
 public class AccountController_v1_0 {
 
+	/** The logger. */
+	private final Logger LOGGER = Logger.getLogger(this.getClass());
+
 	/** The http request. */
 	@Context
-	HttpServletRequest httpRequest;
+	HttpServletRequest   httpRequest;
 
 	/**
 	 * Activate.
@@ -107,8 +111,7 @@ public class AccountController_v1_0 {
 			user = null;
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			response = Response.status(Status.INTERNAL_SERVER_ERROR).entity("There is some error, please try again later!");
 		}
@@ -127,7 +130,7 @@ public class AccountController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String changePassword(@FormParam(ParamDefine.OLD_PASSWORD) StringNotEmptyParam oldPassword,
-	        @FormParam(ParamDefine.NEW_PASSWORD) StringNotEmptyParam newPassword) {
+			@FormParam(ParamDefine.NEW_PASSWORD) StringNotEmptyParam newPassword) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
 
@@ -148,8 +151,7 @@ public class AccountController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}
@@ -169,8 +171,8 @@ public class AccountController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String editAccount(@FormParam(ParamDefine.CARD_NAME) StringNotEmptyParam cardName,
-	        @FormParam(ParamDefine.CARD_NUMBER) StringNotEmptyParam cardNumber, @FormParam(ParamDefine.CVV_NUMBER) StringNotEmptyParam cvvNumber,
-	        @FormParam(ParamDefine.EXPIRE) CreditExpireParam expireDay) {
+			@FormParam(ParamDefine.CARD_NUMBER) StringNotEmptyParam cardNumber, @FormParam(ParamDefine.CVV_NUMBER) StringNotEmptyParam cvvNumber,
+			@FormParam(ParamDefine.EXPIRE) CreditExpireParam expireDay) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (CreditAccountDAO creditDAO = AbstractDAO.borrowFromPool(DAOPool.creditPool)) {
 			JsonObject jsonResponse = new JsonObject();
@@ -199,8 +201,7 @@ public class AccountController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}
@@ -268,8 +269,7 @@ public class AccountController_v1_0 {
 				return jsonResponse.toString();
 			}
 			catch (Exception e) {
-				System.err.println(e.getMessage());
-				e.printStackTrace();
+				this.LOGGER.error(e.getMessage(), e);
 				HibernateUtil.rollbackTransaction(session);
 				throw new ProcessException(e);
 			}
@@ -279,8 +279,7 @@ public class AccountController_v1_0 {
 			}
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			throw new ProcessException(e);
 		}
 		finally {
@@ -304,8 +303,8 @@ public class AccountController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String editProfile(@FormParam(ParamDefine.FIRST_NAME) StringNotEmptyParam firstName,
-	        @FormParam(ParamDefine.LAST_NAME) StringNotEmptyParam lastName, @FormParam(ParamDefine.PHONE) ContactParam phone,
-	        @FormParam(ParamDefine.EMAIL) ContactParam email) {
+			@FormParam(ParamDefine.LAST_NAME) StringNotEmptyParam lastName, @FormParam(ParamDefine.PHONE) ContactParam phone,
+			@FormParam(ParamDefine.EMAIL) ContactParam email) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
 			JsonObject jsonResponse = new JsonObject();
@@ -340,8 +339,7 @@ public class AccountController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}
@@ -376,7 +374,7 @@ public class AccountController_v1_0 {
 					// Send verify code to contact
 					EmailProcess emailProcess = new EmailProcess();
 					if (emailProcess.sendEmail(email.getValue(), "", "Reset Haimosi password", "Enter <b>" + verifyCode
-					        + "</b> in Haimosi application and reset your password.")) {
+							+ "</b> in Haimosi application and reset your password.")) {
 						jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 					}
 					else {
@@ -395,8 +393,7 @@ public class AccountController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}
@@ -425,8 +422,7 @@ public class AccountController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			throw new ProcessException(e);
 		}
 	}
@@ -445,15 +441,14 @@ public class AccountController_v1_0 {
 			UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 			jsonResponse = JsonUtil.toJsonObject(user);
 			String avatarUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-			        + this.httpRequest.getContextPath() + "/resource/avatar/" + user.getIdUser().toString() + "/" + user.getAvatar();
+					+ this.httpRequest.getContextPath() + "/resource/avatar/" + user.getIdUser().toString() + "/" + user.getAvatar();
 			jsonResponse.addProperty(ParamDefine.AVATAR, avatarUrl);
 			jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			throw new ProcessException(e);
 		}
 	}
@@ -471,7 +466,7 @@ public class AccountController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String login(@FormParam(ParamDefine.EMAIL) ContactParam email, @FormParam(ParamDefine.PASSWORD) StringNotEmptyParam password)
-	        throws Exception {
+			throws Exception {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
 
@@ -503,8 +498,7 @@ public class AccountController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			throw new ProcessException(e);
 		}
 	}
@@ -529,14 +523,14 @@ public class AccountController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String register(@FormParam(ParamDefine.FIRST_NAME) StringNotEmptyParam firstName,
-	        @FormParam(ParamDefine.LAST_NAME) StringNotEmptyParam lastName, @FormParam(ParamDefine.PHONE) ContactParam phone,
-	        @FormParam(ParamDefine.EMAIL) ContactParam email, @FormParam(ParamDefine.PASSWORD) StringNotEmptyParam password,
-	        @FormParam(ParamDefine.CARD_NAME) StringNotEmptyParam cardName, @FormParam(ParamDefine.CARD_NUMBER) StringNotEmptyParam cardNumber,
-	        @FormParam(ParamDefine.CVV_NUMBER) StringNotEmptyParam cvvNumber, @FormParam(ParamDefine.EXPIRE) CreditExpireParam expireDay)
-	        throws Exception {
+			@FormParam(ParamDefine.LAST_NAME) StringNotEmptyParam lastName, @FormParam(ParamDefine.PHONE) ContactParam phone,
+			@FormParam(ParamDefine.EMAIL) ContactParam email, @FormParam(ParamDefine.PASSWORD) StringNotEmptyParam password,
+			@FormParam(ParamDefine.CARD_NAME) StringNotEmptyParam cardName, @FormParam(ParamDefine.CARD_NUMBER) StringNotEmptyParam cardNumber,
+			@FormParam(ParamDefine.CVV_NUMBER) StringNotEmptyParam cvvNumber, @FormParam(ParamDefine.EXPIRE) CreditExpireParam expireDay)
+					throws Exception {
 		// Check all register information available
 		if (firstName == null || lastName == null || phone == null || email == null || password == null || cardName == null || cardNumber == null
-		        || cvvNumber == null || expireDay == null) {
+				|| cvvNumber == null || expireDay == null) {
 			throw new BadParamException(new Throwable("Some of required fields empty"));
 		}
 
@@ -546,8 +540,8 @@ public class AccountController_v1_0 {
 		}
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (CreditAccountDAO creditDAO = AbstractDAO.borrowFromPool(DAOPool.creditPool);
-		        UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool);
-		        RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
+				UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool);
+				RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool)) {
 
 			JsonObject jsonResponse = new JsonObject();
 
@@ -559,7 +553,7 @@ public class AccountController_v1_0 {
 			else {
 				// Save credit account first
 				CreditAccountPOJO creditAccount = new CreditAccountPOJO(null, cardName.getValue(), cardNumber.getValue(), expireDay.getValue(),
-				        cvvNumber.getValue());
+						cvvNumber.getValue());
 				Integer idCredit = creditDAO.saveID(session, creditAccount);
 
 				if (idCredit != null) {
@@ -569,7 +563,7 @@ public class AccountController_v1_0 {
 					RolePOJO role = roleDAO.get(session, Constant.USER_ROLE_MEMBER);
 					String verifyCode = RandomStringUtils.randomNumeric(6);
 					user = new UserPOJO(null, firstName.getValue(), lastName.getValue(), phone.getValue(), email.getValue(), password.getValue(),
-					        verifyCode, Constant.USER_STATUS_INACTIVATE, role, creditAccount, null);
+							verifyCode, Constant.USER_STATUS_INACTIVATE, role, creditAccount, null);
 					Integer idUser = userDAO.saveID(session, user);
 					if (idUser != null) {
 						// Try to re-add user credit account
@@ -593,18 +587,17 @@ public class AccountController_v1_0 {
 						String nameRecipients = firstName.getValue() + " " + lastName.getValue();
 						String enVerifyCode = EncryptionUtil.encode(verifyCode, Config.encrypt_password);
 						String link = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-						        + this.httpRequest.getContextPath() + "/link?a=activation&s=" + enVerifyCode + "&i=" + idUser.toString();
+								+ this.httpRequest.getContextPath() + "/link?a=activation&s=" + enVerifyCode + "&i=" + idUser.toString();
 
 						String content;
 						try {
 							content = FileUtil.readFile(Config.resource_template_path + "ActivateAccount").replace("<name>", nameRecipients)
-							        .replace("<link>", link);
+									.replace("<link>", link);
 							EmailProcess emailProcess = new EmailProcess();
 							emailProcess.sendEmail(email.getValue(), nameRecipients, "Verify Haimosi account", content);
 						}
 						catch (Exception e) {
-							System.err.println(e.getMessage());
-							e.printStackTrace();
+							this.LOGGER.error(e.getMessage(), e);
 						}
 
 					}
@@ -624,8 +617,7 @@ public class AccountController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}
@@ -644,7 +636,7 @@ public class AccountController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String resetPassword(@FormParam(ParamDefine.EMAIL) ContactParam email, @FormParam(ParamDefine.VERIFY_CODE) StringNotEmptyParam verifyCode,
-	        @FormParam(ParamDefine.NEW_PASSWORD) StringNotEmptyParam newPassword) {
+			@FormParam(ParamDefine.NEW_PASSWORD) StringNotEmptyParam newPassword) {
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (UserDAO userDAO = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
 
@@ -677,8 +669,7 @@ public class AccountController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			HibernateUtil.rollbackTransaction(session);
 			throw new ProcessException(e);
 		}

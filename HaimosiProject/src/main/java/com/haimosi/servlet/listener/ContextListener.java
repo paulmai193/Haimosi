@@ -18,6 +18,7 @@ import logia.hibernate.util.HibernateUtil;
 import logia.utility.pool.ThreadPoolFactory;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.haimosi.define.Config;
@@ -27,6 +28,7 @@ import com.haimosi.hibernate.dao.RoleDAO;
 import com.haimosi.hibernate.pojo.RolePOJO;
 import com.haimosi.pool.DAOPool;
 import com.haimosi.pool.ThreadPool;
+import com.stripe.Stripe;
 
 /**
  * The listener interface for receiving context events. The class that is interested in processing a context event implements this interface, and the
@@ -39,92 +41,12 @@ import com.haimosi.pool.ThreadPool;
  */
 public class ContextListener implements ServletContextListener {
 
+	/** The logger. */
+	private static final Logger LOGGER        = Logger.getLogger(ContextListener.class);
+
 	/** The Constant FILE_PATH_CONFIG. */
-	private static final String FILE_PATH_CONFIG = ContextListener.class.getClassLoader().getResource("haimosi.cfg.xml").getPath();
-	private static final String FILE_PATH_SQL    = ContextListener.class.getClassLoader().getResource("prepare.sql").getPath();
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
-	 */
-	@Override
-	public void contextDestroyed(ServletContextEvent contextEvent) {
-		ThreadPool._threadPool.release();
-		HibernateUtil.releaseFactory();
-		DAOPool.release();
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
-	 */
-	@Override
-	public void contextInitialized(ServletContextEvent contextEvent) {
-		/* Read configurator xml */
-		ContextListener.readServerConfig();
-		try {
-			/****************************************************/
-			/** Load everything of this apps context from here **/
-
-			/* Resource path */
-			Config.resource_avatar_path = contextEvent.getServletContext().getRealPath("/resource/avatar/") + Constant.SEPERATOR;
-			Config.resource_item_path = contextEvent.getServletContext().getRealPath("/resource/item/") + Constant.SEPERATOR;
-			Config.resource_lucene_index = contextEvent.getServletContext().getRealPath("/resource/luceneindex/") + Constant.SEPERATOR;
-			Config.resource_template_path = contextEvent.getServletContext().getRealPath("/resource/template/") + Constant.SEPERATOR;
-			Config.resource_trans_path = contextEvent.getServletContext().getRealPath("/resource/transaction/") + Constant.SEPERATOR;
-
-			/* Thread pool */
-			ThreadPool._threadPool = new ThreadPoolFactory(Config.num_core_thread_in_pool, Config.num_max_thread_in_pool, Config.thread_priority,
-					true);
-
-			/* Hibernate */
-			HibernateUtil.setConfigPath("hibernate.cfg.xml");
-			Session session = HibernateUtil.beginTransaction();
-			try (RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool);
-					ListTransDAO listTransDAO = AbstractDAO.borrowFromPool(DAOPool.listTransPool)) {
-
-				// Check role exist, if not create default value
-				if (roleDAO.getList(session).size() == 0) {
-					RolePOJO admin = new RolePOJO(null, "ADMIN", null);
-					RolePOJO member = new RolePOJO(null, "MEMBER", null);
-					roleDAO.saveOrUpdate(session, admin);
-					roleDAO.saveOrUpdate(session, member);
-					admin = null;
-					member = null;
-				}
-
-				// Check search view not exist, create new one
-				if (listTransDAO.getList(session).size() == 0) {
-					for (String queryString : FileUtils.readLines(new File(ContextListener.FILE_PATH_SQL))) {
-						listTransDAO.updateBySQLQuery(session, queryString);
-					}
-				}
-				// Indexing for luncene solr
-				// HibernateUtil.indexing();
-
-				HibernateUtil.commitTransaction(session);
-			}
-			catch (Exception e) {
-				System.err.println(e.getMessage());
-				e.printStackTrace();
-				HibernateUtil.rollbackTransaction(session);
-			}
-			finally {
-				HibernateUtil.closeSession(session);
-			}
-
-			/********************* Ending ***********************/
-			/****************************************************/
-		}
-		catch (Throwable e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-		}
-
-	}
+	private static String       FILE_PATH_CONFIG/* = ContextListener.class.getClassLoader().getResource("haimosi.cfg.xml").getPath() */;
+	private static final String FILE_PATH_SQL = ContextListener.class.getClassLoader().getResource("prepare.sql").getPath();
 
 	/**
 	 * Read server config.
@@ -142,16 +64,13 @@ public class ContextListener implements ServletContextListener {
 			ContextListener.readServerConfig(p);
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			ContextListener.LOGGER.error(e.getMessage(), e);
 		}
 		finally {
 			try {
 				i.close();
 			}
 			catch (Exception e) {
-				System.err.println(e.getMessage());
-				e.printStackTrace();
 			}
 		}
 	}
@@ -176,16 +95,13 @@ public class ContextListener implements ServletContextListener {
 			p.storeToXML(o, "Set new configure at " + new Date());
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			ContextListener.LOGGER.error(e.getMessage(), e);
 		}
 		finally {
 			try {
 				o.close();
 			}
 			catch (Exception e) {
-				System.err.println(e.getMessage());
-				e.printStackTrace();
 			}
 		}
 		return p;
@@ -211,6 +127,9 @@ public class ContextListener implements ServletContextListener {
 
 		/* Data encrypt password */
 		newconfig.put("encrypt_password", "haimosiv1.0");
+
+		/* Stripe api key */
+		newconfig.put("stripe.api", "sk_test_BQokikJOvBiI2HlWgH4olfQ2");
 
 		/********************* Ending ***********************/
 		/****************************************************/
@@ -239,7 +158,92 @@ public class ContextListener implements ServletContextListener {
 		/* Data encrypt password */
 		Config.encrypt_password = p.getProperty("encrypt_password");
 
+		/* Stripe api key */
+		Stripe.apiKey = p.getProperty("stripe.api");
+
 		/********************* Ending ***********************/
 		/****************************************************/
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
+	 */
+	@Override
+	public void contextDestroyed(ServletContextEvent contextEvent) {
+		ThreadPool._threadPool.release();
+		HibernateUtil.releaseFactory();
+		DAOPool.release();
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
+	 */
+	@Override
+	public void contextInitialized(ServletContextEvent contextEvent) {
+		/* Read configurator xml */
+		ContextListener.FILE_PATH_CONFIG = contextEvent.getServletContext().getRealPath("/resource/config/") + Constant.SEPERATOR + "haimosi.cfg.xml";
+		ContextListener.readServerConfig();
+		try {
+			/****************************************************/
+			/** Load everything of this apps context from here **/
+
+			/* Resource path */
+			Config.resource_avatar_path = contextEvent.getServletContext().getRealPath("/resource/avatar/") + Constant.SEPERATOR;
+			Config.resource_item_path = contextEvent.getServletContext().getRealPath("/resource/item/") + Constant.SEPERATOR;
+			Config.resource_lucene_index = contextEvent.getServletContext().getRealPath("/resource/luceneindex/") + Constant.SEPERATOR;
+			Config.resource_template_path = contextEvent.getServletContext().getRealPath("/resource/template/") + Constant.SEPERATOR;
+			Config.resource_trans_path = contextEvent.getServletContext().getRealPath("/resource/transaction/") + Constant.SEPERATOR;
+
+			/* Thread pool */
+			ThreadPool._threadPool = new ThreadPoolFactory(Config.num_core_thread_in_pool, Config.num_max_thread_in_pool, Config.thread_priority,
+			        true);
+
+			/* Hibernate */
+			HibernateUtil.setConfigPath("hibernate.cfg.xml");
+			Session session = HibernateUtil.beginTransaction();
+			try (RoleDAO roleDAO = AbstractDAO.borrowFromPool(DAOPool.rolePool);
+			        ListTransDAO listTransDAO = AbstractDAO.borrowFromPool(DAOPool.listTransPool)) {
+
+				// Check role exist, if not create default value
+				if (roleDAO.getList(session).size() == 0) {
+					RolePOJO admin = new RolePOJO(null, "ADMIN", null);
+					RolePOJO member = new RolePOJO(null, "MEMBER", null);
+					roleDAO.saveOrUpdate(session, admin);
+					roleDAO.saveOrUpdate(session, member);
+					admin = null;
+					member = null;
+				}
+
+				// Check search view not exist, create new one
+				if (listTransDAO.getList(session).size() == 0) {
+					for (String queryString : FileUtils.readLines(new File(ContextListener.FILE_PATH_SQL))) {
+						listTransDAO.updateBySQLQuery(session, queryString);
+					}
+				}
+				// Indexing for luncene solr
+				// HibernateUtil.indexing();
+
+				HibernateUtil.commitTransaction(session);
+			}
+			catch (Exception e) {
+				ContextListener.LOGGER.error(e.getMessage(), e);
+				HibernateUtil.rollbackTransaction(session);
+			}
+			finally {
+				HibernateUtil.closeSession(session);
+			}
+
+			/********************* Ending ***********************/
+			/****************************************************/
+		}
+		catch (Throwable t) {
+			ContextListener.LOGGER.error(t.getMessage(), t);
+		}
+
 	}
 }

@@ -17,6 +17,8 @@ import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import org.apache.log4j.Logger;
+
 import com.haimosi.hibernate.pojo.UserPOJO;
 import com.haimosi.websocket.config.ServerEndpointConfig;
 import com.haimosi.websocket.data.MessageDecoder;
@@ -30,6 +32,9 @@ import com.haimosi.websocket.data.MessageInterface;
  */
 @ServerEndpoint(value = "/websocket", subprotocols = { "v1.0" }, encoders = { MessageEncoder.class }, decoders = { MessageDecoder.class }, configurator = ServerEndpointConfig.class)
 public class WSEndpoint {
+
+	/** The logger. */
+	private final Logger                   LOGGER            = Logger.getLogger(this.getClass());
 
 	/** The _client session map. */
 	public static Map<Integer, WSEndpoint> _clientSessionMap = Collections.synchronizedMap(new HashMap<Integer, WSEndpoint>());
@@ -65,7 +70,7 @@ public class WSEndpoint {
 	 */
 	@OnClose
 	public void onClose() {
-		System.out.println("Client " + this.session.getRequestURI().toString() + " closed");
+		this.LOGGER.info("Client " + this.session.getRequestURI().toString() + " closed");
 		WSEndpoint._clientSessionMap.remove(this.user.getIdUser());
 
 		this.session = null;
@@ -82,6 +87,7 @@ public class WSEndpoint {
 	@OnError
 	public void onError(Throwable t) {
 		t.printStackTrace();
+		this.LOGGER.error(t.getMessage(), t);
 	}
 
 	/**
@@ -118,7 +124,7 @@ public class WSEndpoint {
 		}
 		else {
 			session.close(new CloseReason(CloseCodes.PROTOCOL_ERROR, "Not support this protocols"));
-			System.out.println("Not support this protocols");
+			this.LOGGER.info("Not support this protocols");
 			this.session = null;
 			this.protocol = null;
 			this.createTime = 0;

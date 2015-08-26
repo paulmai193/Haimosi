@@ -31,7 +31,7 @@ import com.haimosi.param.ParamDefine;
  * @author Paul Mai
  */
 @Entity
-@Table(name = "transaction", catalog = "paulmai")
+@Table(name = "transaction")
 @DynamicUpdate(value = true)
 @logia.utility.json.annotaion.JsonObject
 public class TransactionPOJO implements Serializable {
@@ -110,7 +110,7 @@ public class TransactionPOJO implements Serializable {
 	 * @param like the like
 	 */
 	public TransactionPOJO(Integer idTransaction, UserPOJO user, ItemPOJO item, float quantity, float amount, byte method, Date time, byte status,
-			String photo, boolean like) {
+	        String photo, boolean like) {
 		this.idTransaction = idTransaction;
 		this.user = user;
 		this.item = item;

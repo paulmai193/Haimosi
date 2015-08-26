@@ -33,7 +33,7 @@ import com.haimosi.param.ParamDefine;
  * @author Paul Mai
  */
 @Entity
-@Table(name = "user", catalog = "paulmai")
+@Table(name = "user")
 @DynamicUpdate(value = true)
 @logia.utility.json.annotaion.JsonObject
 public class UserPOJO implements Serializable {
@@ -126,7 +126,7 @@ public class UserPOJO implements Serializable {
 	 * @param avatar the avatar
 	 */
 	public UserPOJO(Integer idUser, String firstName, String lastName, String phone, String email, String password, String verifycode, byte status,
-			RolePOJO role, CreditAccountPOJO creditAccount, String avatar) {
+	        RolePOJO role, CreditAccountPOJO creditAccount, String avatar) {
 		this.idUser = idUser;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -161,8 +161,8 @@ public class UserPOJO implements Serializable {
 			UserPOJO compareUser = (UserPOJO) obj;
 			EqualsBuilder builder = new EqualsBuilder();
 			builder.append(this.getStatus(), compareUser.getStatus()).append(this.getEmail(), compareUser.getEmail())
-			.append(this.getFirstName(), compareUser.getFirstName()).append(this.getIdUser(), compareUser.getIdUser())
-			.append(this.getLastName(), compareUser.getLastName()).append(this.getPassword(), compareUser.getPassword());
+			        .append(this.getFirstName(), compareUser.getFirstName()).append(this.getIdUser(), compareUser.getIdUser())
+			        .append(this.getLastName(), compareUser.getLastName()).append(this.getPassword(), compareUser.getPassword());
 			return builder.isEquals();
 		}
 		else {
@@ -296,7 +296,7 @@ public class UserPOJO implements Serializable {
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder(17, 31);
 		builder.append(this.getStatus()).append(this.getEmail()).append(this.getFirstName()).append(this.getIdUser()).append(this.getLastName())
-		.append(this.getPassword()).append(this.getPassword()).append(this.getPhone());
+		        .append(this.getPassword()).append(this.getPassword()).append(this.getPhone());
 		return builder.toHashCode();
 	}
 

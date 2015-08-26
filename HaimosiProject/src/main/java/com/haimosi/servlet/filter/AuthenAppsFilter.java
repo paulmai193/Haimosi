@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import logia.hibernate.dao.AbstractDAO;
 import logia.hibernate.util.HibernateUtil;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.haimosi.define.Constant;
@@ -36,6 +37,9 @@ import com.haimosi.pool.DAOPool;
  * @author Paul Mai
  */
 public class AuthenAppsFilter implements Filter {
+
+	/** The logger. */
+	private final Logger               LOGGER     = Logger.getLogger(this.getClass());
 
 	/** The _client map. */
 	public static Map<Integer, String> _clientMap = new HashMap<Integer, String>();
@@ -98,33 +102,32 @@ public class AuthenAppsFilter implements Filter {
 							else {
 								RequestDispatcher dispatcher = req.getRequestDispatcher("/errorhander?errorcode=" + StatusCode.LOCKED.getCode());
 								dispatcher.forward(request, response);
-								System.err.println("User was locked");
+								this.LOGGER.info("User was locked");
 							}
 						}
 						else {
 							RequestDispatcher dispatcher = req.getRequestDispatcher("/errorhander?errorcode=" + StatusCode.WRONG_ACCOUNT.getCode());
 							dispatcher.forward(request, response);
-							System.err.println("Wrong account");
+							this.LOGGER.info("Wrong account");
 						}
 					}
 					catch (Exception e) {
-						System.err.println(e.getMessage());
-						e.printStackTrace();
+						this.LOGGER.error(e.getMessage(), e);
 						RequestDispatcher dispatcher = req.getRequestDispatcher("/errorhander?errorcode=" + StatusCode.INTERNAL_ERROR.getCode()
-						        + "&errormessage=" + e.getMessage());
+								+ "&errormessage=" + e.getMessage());
 						dispatcher.forward(request, response);
 					}
 				}
 				else {
 					req.getSession().invalidate();
 
-					System.err.println("Session timeout, must login again");
+					this.LOGGER.info("Session timeout, must login again");
 					RequestDispatcher dispatcher = req.getRequestDispatcher("/errorhander?errorcode=" + StatusCode.MUST_LOGIN.getCode());
 					dispatcher.forward(request, response);
 				}
 			}
 			else {
-				System.err.println("Not recognize session, maybe not login or session was timeout");
+				this.LOGGER.info("Not recognize session, maybe not login or session was timeout");
 				RequestDispatcher dispatcher = req.getRequestDispatcher("/errorhander?errorcode=" + StatusCode.TIME_OUT.getCode());
 				dispatcher.forward(request, response);
 			}

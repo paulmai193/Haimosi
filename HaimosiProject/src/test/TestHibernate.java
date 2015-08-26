@@ -3,8 +3,8 @@ import logia.hibernate.util.HibernateUtil;
 
 import org.hibernate.Session;
 
-import com.haimosi.hibernate.dao.ItemDAO;
-import com.haimosi.hibernate.pojo.ItemPOJO;
+import com.haimosi.hibernate.dao.UserDAO;
+import com.haimosi.hibernate.pojo.UserPOJO;
 import com.haimosi.pool.DAOPool;
 
 public class TestHibernate {
@@ -12,9 +12,9 @@ public class TestHibernate {
 	public static void main(String[] args) {
 		HibernateUtil.setConfigPath("hibernate.cfg.xml");
 		Session session = HibernateUtil.beginTransaction();
-		try (ItemDAO dao = AbstractDAO.borrowFromPool(DAOPool.itemPool)) {
-			for (ItemPOJO item : dao.getList(session)) {
-				System.out.println(item.getName());
+		try (UserDAO dao = AbstractDAO.borrowFromPool(DAOPool.userPool)) {
+			for (UserPOJO item : dao.getList(session)) {
+				System.out.println(item.getFirstName());
 			}
 		}
 		catch (Throwable e) {

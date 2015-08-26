@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Set new configure at Tue May 26 04:42:15 PDT 2015</comment>
+<entry key="num_max_thread_in_pool">3</entry>
+<entry key="num_core_thread_in_pool">1</entry>
+<entry key="thread_priority">1</entry>
+<entry key="num_max_dao_in_pool">3</entry>
+<entry key="num_core_dao_in_pool">1</entry>
+<entry key="interval_validate_pool">10</entry>
+<entry key="encrypt_password">haimosiv1.0</entry>
+<entry key="stripe.api">sk_test_lUPVYJ6U3a7vIh3c04s5XNke</entry>
+</properties>

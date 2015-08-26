@@ -13,6 +13,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.haimosi.define.Constant;
 import com.haimosi.define.StatusCode;
 import com.haimosi.hibernate.pojo.UserPOJO;
@@ -24,6 +26,9 @@ import com.haimosi.param.ParamDefine;
  * @author Paul Mai
  */
 public class AdminFilter implements Filter {
+
+	/** The logger. */
+	private final Logger              LOGGER = Logger.getLogger(this.getClass());
 
 	/** The Constant listAllowReq. List of allow http request without validate */
 	private static final List<String> listAllowReq;
@@ -60,7 +65,7 @@ public class AdminFilter implements Filter {
 			else {
 				RequestDispatcher dispatcher = req.getRequestDispatcher("/errorhander?errorcode=" + StatusCode.BAD_REQUEST.getCode());
 				dispatcher.forward(request, response);
-				System.err.println("User was locked");
+				this.LOGGER.info("User was locked");
 			}
 		}
 		else {

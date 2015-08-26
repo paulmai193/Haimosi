@@ -26,7 +26,7 @@ import com.haimosi.param.ParamDefine;
  * @author Paul Mai
  */
 @Entity
-@Table(name = "creditaccount", catalog = "paulmai")
+@Table(name = "creditaccount")
 @DynamicUpdate(value = true)
 @logia.utility.json.annotaion.JsonObject
 public class CreditAccountPOJO implements Serializable {
@@ -36,29 +36,24 @@ public class CreditAccountPOJO implements Serializable {
 
 	/** The card name. */
 	@Column(name = "cardname", nullable = false, length = 30)
-	@JsonKey(key = ParamDefine.CARD_NAME)
 	private String            cardName;
 
 	/** The card number. */
 	@Column(name = "number", nullable = false, length = 30)
-	@JsonKey(key = ParamDefine.CARD_NUMBER)
 	private String            cardNumber;
 
 	/** The cvv number. */
 	@Column(name = "cvvnumber", nullable = false, length = 30)
-	@JsonKey(key = ParamDefine.CVV_NUMBER)
 	private String            cvvNumber;
 
 	/** The expire date. */
 	@Column(name = "expiredate", nullable = false, length = 30)
-	@JsonKey(key = ParamDefine.EXPIRE)
 	private String            expireDate;
 
 	/** The id credit account. */
 	@Id
 	@GeneratedValue
 	@Column(name = "idcreditaccount", nullable = false)
-	@JsonKey(key = ParamDefine.CARD_ID)
 	private Integer           idCreditAccount;
 
 	/** The user. */
@@ -95,6 +90,7 @@ public class CreditAccountPOJO implements Serializable {
 	 *
 	 * @return the cardName
 	 */
+	@JsonKey(key = ParamDefine.CARD_NAME)
 	public String getCardName() {
 		String s = EncryptionUtil.decode(this.cardName, Config.encrypt_password);
 		if (s != null) {
@@ -110,6 +106,7 @@ public class CreditAccountPOJO implements Serializable {
 	 *
 	 * @return the cardNumber
 	 */
+	@JsonKey(key = ParamDefine.CARD_NUMBER)
 	public String getCardNumber() {
 		String s = EncryptionUtil.decode(this.cardNumber, Config.encrypt_password);
 		if (s != null) {
@@ -125,6 +122,7 @@ public class CreditAccountPOJO implements Serializable {
 	 *
 	 * @return the cvvNumber
 	 */
+	@JsonKey(key = ParamDefine.CVV_NUMBER)
 	public String getCvvNumber() {
 		String s = EncryptionUtil.decode(this.cvvNumber, Config.encrypt_password);
 		if (s != null) {
@@ -140,6 +138,7 @@ public class CreditAccountPOJO implements Serializable {
 	 *
 	 * @return the expireDate
 	 */
+	@JsonKey(key = ParamDefine.EXPIRE)
 	public String getExpireDate() {
 		String s = EncryptionUtil.decode(this.expireDate, Config.encrypt_password);
 		if (s != null) {
@@ -155,6 +154,7 @@ public class CreditAccountPOJO implements Serializable {
 	 *
 	 * @return the idCreditAccount
 	 */
+	@JsonKey(key = ParamDefine.CARD_ID)
 	public Integer getIdCreditAccount() {
 		return this.idCreditAccount;
 	}

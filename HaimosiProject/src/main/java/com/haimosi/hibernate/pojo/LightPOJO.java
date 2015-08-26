@@ -21,7 +21,7 @@ import com.haimosi.param.ParamDefine;
  * @author Paul Mai
  */
 @Entity
-@Table(name = "light", catalog = "paulmai")
+@Table(name = "light")
 @DynamicUpdate(value = true)
 @logia.utility.json.annotaion.JsonObject
 public class LightPOJO implements Serializable {

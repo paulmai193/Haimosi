@@ -121,5 +121,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- end Websocket -->
+		<!-- Online payment -->
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>1.34.0</version>
+		</dependency>
+		<!-- end Online payment -->
 	</dependencies>
 </project>

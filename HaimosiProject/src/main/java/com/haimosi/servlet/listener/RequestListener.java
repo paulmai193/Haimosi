@@ -5,6 +5,7 @@ import javax.servlet.ServletRequestListener;
 
 import logia.hibernate.util.HibernateUtil;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.haimosi.param.ParamDefine;
@@ -20,6 +21,9 @@ import com.haimosi.param.ParamDefine;
  */
 public class RequestListener implements ServletRequestListener {
 
+	/** The logger. */
+	private final Logger LOGGER = Logger.getLogger(this.getClass());
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -34,7 +38,7 @@ public class RequestListener implements ServletRequestListener {
 				requestEvent.getServletRequest().removeAttribute(ParamDefine.HIBERNATE_SESSION);
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				this.LOGGER.error(e.getMessage(), e);
 			}
 		}
 	}

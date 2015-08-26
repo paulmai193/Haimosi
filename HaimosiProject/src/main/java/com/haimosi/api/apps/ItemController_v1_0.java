@@ -20,6 +20,7 @@ import logia.utility.collection.CollectionUtil;
 import logia.utility.json.JsonUtil;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.google.gson.JsonArray;
@@ -42,9 +43,12 @@ import com.haimosi.pool.DAOPool;
 @Path("/api/v1.0/apps/item")
 public class ItemController_v1_0 {
 
+	/** The logger. */
+	private final Logger LOGGER = Logger.getLogger(this.getClass());
+
 	/** The http request. */
 	@Context
-	HttpServletRequest httpRequest;
+	HttpServletRequest   httpRequest;
 
 	/**
 	 * Adds the favorite item.
@@ -159,7 +163,7 @@ public class ItemController_v1_0 {
 					String photo = item.getPhoto();
 					if (photo != null && !photo.isEmpty()) {
 						String photoUrl = "http://" + this.httpRequest.getServerName() + ":" + this.httpRequest.getServerPort()
-						        + this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photo;
+								+ this.httpRequest.getContextPath() + "/resource/item/" + item.getIdItem().toString() + "/" + photo;
 						jsonItem.addProperty(ParamDefine.ITEM_PHOTO, photoUrl);
 					}
 
@@ -176,8 +180,7 @@ public class ItemController_v1_0 {
 			return jsonResponse.toString();
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			this.LOGGER.error(e.getMessage(), e);
 			throw new ProcessException(e);
 		}
 	}

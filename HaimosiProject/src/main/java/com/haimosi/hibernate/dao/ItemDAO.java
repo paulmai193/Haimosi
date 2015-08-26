@@ -27,16 +27,6 @@ public class ItemDAO extends AbstractDAO<ItemPOJO, Integer> {
 		DAOPool.itemPool.returnObject(this);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see logia.hibernate.dao.AbstractDAO#getPOJOClass()
-	 */
-	@Override
-	protected Class<ItemPOJO> getPOJOClass() {
-		return ItemPOJO.class;
-	}
-
 	/**
 	 * Gets the list primaries.
 	 *
@@ -53,9 +43,19 @@ public class ItemDAO extends AbstractDAO<ItemPOJO, Integer> {
 			entities = query.list();
 		}
 		catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			this.LOGGER.error(e.getMessage(), e);
 		}
 		return entities;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see logia.hibernate.dao.AbstractDAO#getPOJOClass()
+	 */
+	@Override
+	protected Class<ItemPOJO> getPOJOClass() {
+		return ItemPOJO.class;
 	}
 
 }

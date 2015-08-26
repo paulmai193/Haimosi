@@ -67,6 +67,42 @@ public enum StatusCode {
 	}
 
 	/**
+	 * Prints the status.
+	 *
+	 * @param code the code
+	 * @return the json object
+	 */
+	public static JsonObject printStatus(int code) {
+		for (StatusCode statusCode : StatusCode.values()) {
+			if (statusCode.getCode() == code) {
+				return statusCode.printStatus();
+			}
+		}
+		return INTERNAL_ERROR.printStatus();
+	}
+
+	/**
+	 * Prints the status.
+	 *
+	 * @param code the code
+	 * @param message the message
+	 * @return the json object
+	 */
+	public static JsonObject printStatus(int code, String message) {
+		for (StatusCode statusCode : StatusCode.values()) {
+			if (statusCode.getCode() == code) {
+				if (message != null) {
+					return statusCode.printStatus(message);
+				}
+				else {
+					return statusCode.printStatus();
+				}
+			}
+		}
+		return INTERNAL_ERROR.printStatus();
+	}
+
+	/**
 	 * Gets the code.
 	 *
 	 * @return the code
@@ -113,42 +149,6 @@ public enum StatusCode {
 			status.addProperty(ParamDefine.STATUS_CONTENT, message);
 		}
 		return status;
-	}
-
-	/**
-	 * Prints the status.
-	 *
-	 * @param code the code
-	 * @return the json object
-	 */
-	public static JsonObject printStatus(int code) {
-		for (StatusCode statusCode : StatusCode.values()) {
-			if (statusCode.getCode() == code) {
-				return statusCode.printStatus();
-			}
-		}
-		return INTERNAL_ERROR.printStatus();
-	}
-
-	/**
-	 * Prints the status.
-	 *
-	 * @param code the code
-	 * @param message the message
-	 * @return the json object
-	 */
-	public static JsonObject printStatus(int code, String message) {
-		for (StatusCode statusCode : StatusCode.values()) {
-			if (statusCode.getCode() == code) {
-				if (message != null) {
-					return statusCode.printStatus(message);
-				}
-				else {
-					return statusCode.printStatus();
-				}
-			}
-		}
-		return INTERNAL_ERROR.printStatus();
 	}
 
 }

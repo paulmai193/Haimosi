@@ -66,8 +66,7 @@ public class ListTransDAO extends AbstractDAO<ListTransView, Integer> {
 			finalList = query.list();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			System.err.println(e.getMessage());
+			this.LOGGER.error(e.getMessage(), e);
 		}
 
 		return finalList;

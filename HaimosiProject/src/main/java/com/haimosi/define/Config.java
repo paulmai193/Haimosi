@@ -20,6 +20,7 @@ public class Config {
 
 	/* Resource path */
 	public static String resource_avatar_path    = "";
+	public static String resource_config_path    = "";
 	public static String resource_item_path      = "";
 	public static String resource_lucene_index   = "";
 	public static String resource_template_path  = "";

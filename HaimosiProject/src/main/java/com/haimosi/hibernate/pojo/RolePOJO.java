@@ -21,7 +21,7 @@ import org.hibernate.annotations.DynamicUpdate;
  * @author Paul Mai
  */
 @Entity
-@Table(name = "role", catalog = "paulmai")
+@Table(name = "role")
 @DynamicUpdate(value = true)
 public class RolePOJO implements Serializable {
 

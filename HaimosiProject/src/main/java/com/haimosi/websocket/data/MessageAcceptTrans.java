@@ -23,6 +23,10 @@ public class MessageAcceptTrans implements MessageInterface {
 	@JsonKey(key = ParamDefine.METHOD)
 	private byte method;
 
+	/** The status. */
+	@JsonKey(key = ParamDefine.STATUS)
+	private byte status;
+
 	/** The transid. */
 	@JsonKey(key = ParamDefine.TRANSACTION_ID)
 	private int  transid;
@@ -47,6 +51,7 @@ public class MessageAcceptTrans implements MessageInterface {
 		this.command = json.get(ParamDefine.COMMAND).getAsInt();
 		this.transid = json.get(ParamDefine.TRANSACTION_ID).getAsInt();
 		this.method = json.get(ParamDefine.METHOD).getAsByte();
+		this.status = json.get(ParamDefine.STATUS).getAsByte();
 	}
 
 	/*
@@ -79,6 +84,15 @@ public class MessageAcceptTrans implements MessageInterface {
 	}
 
 	/**
+	 * Gets the status.
+	 *
+	 * @return the status
+	 */
+	public byte getStatus() {
+		return status;
+	}
+
+	/**
 	 * Gets the transid.
 	 *
 	 * @return the transid
@@ -100,10 +114,19 @@ public class MessageAcceptTrans implements MessageInterface {
 	/**
 	 * Sets the method.
 	 *
-	 * @param status the method to set
+	 * @param method the new method
 	 */
 	public void setMethod(byte method) {
 		this.method = method;
+	}
+
+	/**
+	 * Sets the status.
+	 *
+	 * @param status the status to set
+	 */
+	public void setStatus(byte status) {
+		this.status = status;
 	}
 
 	/**

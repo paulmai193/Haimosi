@@ -20,7 +20,7 @@ import com.haimosi.param.ParamDefine;
  * @author Paul Mai
  */
 @Entity
-@Table(name = "listtransview", catalog = "paulmai")
+@Table(name = "listtransview")
 @logia.utility.json.annotaion.JsonObject
 /*
  * @Indexed

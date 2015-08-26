@@ -21,7 +21,7 @@ import com.haimosi.param.ParamDefine;
  * @author Paul Mai
  */
 @Entity
-@Table(name = "scale", catalog = "paulmai")
+@Table(name = "scale")
 @DynamicUpdate(value = true)
 @logia.utility.json.annotaion.JsonObject
 public class ScalePOJO implements Serializable {
