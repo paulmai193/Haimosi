@@ -28,6 +28,8 @@ import org.hibernate.Session;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.haimosi.api.util.CheckParameterInterface;
+import com.haimosi.api.util.ImplCheckParameter;
 import com.haimosi.define.Constant;
 import com.haimosi.define.StatusCode;
 import com.haimosi.exception.ProcessException;
@@ -60,11 +62,13 @@ import com.stripe.model.Charge;
 public class TransactionController_v1_0 {
 
 	/** The logger. */
-	private final Logger LOGGER = Logger.getLogger(this.getClass());
+	private final Logger            LOGGER         = Logger.getLogger(this.getClass());
+
+	private CheckParameterInterface checkParameter = new ImplCheckParameter();
 
 	/** The http request. */
 	@Context
-	HttpServletRequest   httpRequest;
+	HttpServletRequest              httpRequest;
 
 	/**
 	 * Accept the transaction.
@@ -78,6 +82,9 @@ public class TransactionController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String accept(@FormParam(ParamDefine.TRANSACTION_ID) IntegerParam idTrans, @FormParam(ParamDefine.METHOD) ByteParam method) {
+
+		this.checkParameter.doCheck(idTrans, method);
+
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool);
@@ -95,15 +102,23 @@ public class TransactionController_v1_0 {
 					/* Call payment api if payment method in app, and set payment status */
 					byte status;
 					if (method.getValue().equals(Constant.PAYMENT_APP)) {
+						// Payment must use Australian cents
 						Payment payment = new Payment(user.getCreditAccount().getCardNumber(), user.getCreditAccount().getExpireDate(), user
-						        .getCreditAccount().getCvvNumber(), (int) trans.getAmount(), "aud", "Pay for Haimosi's goods");
-						Charge charge = payment.doPayment();
-						if (charge.getStatus().equals("succeeded")) {
-							status = 1;
+						        .getCreditAccount().getCvvNumber(), (int) (trans.getAmount() * 100), "aud", "Pay for Haimosi's goods");
+						try {
+							Charge charge = payment.doPayment();
+							if (charge.getStatus().equals("succeeded")) {
+								status = 1;
+							}
+							else {
+								status = 0;
+							}
 						}
-						else {
+						catch (Exception e) {
+							this.LOGGER.error(e.getMessage(), e);
 							status = 0;
 						}
+
 					}
 					else {
 						status = 1; // Success when payment method is cash
@@ -162,6 +177,9 @@ public class TransactionController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String addFavorite(@FormParam(ParamDefine.TRANSACTION_ID) IntegerParam idTrans) {
+
+		this.checkParameter.doCheck(idTrans);
+
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool)) {
 			JsonObject jsonResponse = new JsonObject();
@@ -201,6 +219,9 @@ public class TransactionController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String create(@FormParam(ParamDefine.ITEM_ID) IntegerParam idItem, @FormParam(ParamDefine.QUANTITY) FloatParam quantity) {
+
+		this.checkParameter.doCheck(idItem, quantity);
+
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 		try (ItemDAO itemDAO = AbstractDAO.borrowFromPool(DAOPool.itemPool);
@@ -367,6 +388,9 @@ public class TransactionController_v1_0 {
 	@Consumes(value = { MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces(value = { MediaType.APPLICATION_JSON })
 	public String removeFavorite(@FormParam(ParamDefine.TRANSACTION_ID) IntegerParam idTrans) {
+
+		this.checkParameter.doCheck(idTrans);
+
 		Session session = (Session) this.httpRequest.getAttribute(ParamDefine.HIBERNATE_SESSION);
 		try (TransactionDAO transDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool)) {
 			JsonObject jsonResponse = new JsonObject();

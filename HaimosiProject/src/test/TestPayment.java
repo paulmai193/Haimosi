@@ -19,9 +19,9 @@ public class TestPayment {
 		HibernateUtil.setConfigPath("hibernate.cfg.xml");
 		Session session = HibernateUtil.beginTransaction();
 		try (TransactionDAO dao = AbstractDAO.borrowFromPool(DAOPool.transactionPool)) {
-			TransactionPOJO trans = dao.get(session, 24);
+			TransactionPOJO trans = dao.get(session, 596);
 			Payment payment = new Payment(trans.getUser().getCreditAccount().getCardNumber(), trans.getUser().getCreditAccount().getExpireDate(),
-			        trans.getUser().getCreditAccount().getCvvNumber(), (int) (trans.getAmount() * 100), "usd", "Pay for Haimosi's goods");
+			        trans.getUser().getCreditAccount().getCvvNumber(), (int) (trans.getAmount() * 100), "aud", "Pay for Haimosi's goods");
 			Charge charge = payment.doPayment();
 			System.out.println(charge.getStatus());
 		}
