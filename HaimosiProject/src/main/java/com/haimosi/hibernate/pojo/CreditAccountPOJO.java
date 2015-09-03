@@ -35,19 +35,19 @@ public class CreditAccountPOJO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** The card name. */
-	@Column(name = "cardname", nullable = false, length = 30)
+	@Column(name = "cardname", nullable = false, length = 32)
 	private String            cardName;
 
 	/** The card number. */
-	@Column(name = "number", nullable = false, length = 30)
+	@Column(name = "number", nullable = false, length = 32)
 	private String            cardNumber;
 
 	/** The cvv number. */
-	@Column(name = "cvvnumber", nullable = false, length = 30)
+	@Column(name = "cvvnumber", nullable = false, length = 32)
 	private String            cvvNumber;
 
 	/** The expire date. */
-	@Column(name = "expiredate", nullable = false, length = 30)
+	@Column(name = "expiredate", nullable = false, length = 32)
 	private String            expireDate;
 
 	/** The id credit account. */
