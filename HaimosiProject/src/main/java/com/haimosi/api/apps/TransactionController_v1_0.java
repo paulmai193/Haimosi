@@ -51,6 +51,7 @@ import com.haimosi.websocket.data.MessageAcceptTrans;
 import com.haimosi.websocket.data.MessagePushTransaction;
 import com.haimosi.websocket.data.TransactionContent;
 import com.haimosi.websocket.endpoint.WSEndpoint;
+import com.stripe.exception.CardException;
 import com.stripe.model.Charge;
 
 /**
@@ -109,19 +110,28 @@ public class TransactionController_v1_0 {
 							Charge charge = payment.doPayment();
 							if (charge.getStatus().equals("succeeded")) {
 								status = 1;
+
+								jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 							}
 							else {
 								status = 0;
 							}
 						}
+						catch (CardException e) {
+							this.LOGGER.error(e.getMessage(), e);
+							status = 0;
+							jsonResponse.add(ParamDefine.RESULT, StatusCode.INTERNAL_ERROR.printStatus(e.getMessage()));
+						}
 						catch (Exception e) {
 							this.LOGGER.error(e.getMessage(), e);
 							status = 0;
+							jsonResponse.add(ParamDefine.RESULT, StatusCode.INTERNAL_ERROR.printStatus());
 						}
 
 					}
 					else {
 						status = 1; // Success when payment method is cash
+						jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 					}
 
 					/* Notify to administrator */
@@ -144,8 +154,6 @@ public class TransactionController_v1_0 {
 
 						}
 					}
-
-					jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 				}
 				else {
 					jsonResponse.add(ParamDefine.RESULT, StatusCode.BAD_REQUEST.printStatus("User not the owner of this transaction"));

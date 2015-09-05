@@ -129,7 +129,7 @@ public class ContextListener implements ServletContextListener {
 		newconfig.put("encrypt_password", "haimosiv1.0");
 
 		/* Stripe api key */
-		newconfig.put("stripe.api", "sk_test_BQokikJOvBiI2HlWgH4olfQ2");
+		newconfig.put("stripe.api", "sk_test_lUPVYJ6U3a7vIh3c04s5XNke");
 
 		/********************* Ending ***********************/
 		/****************************************************/

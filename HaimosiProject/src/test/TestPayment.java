@@ -9,6 +9,7 @@ import com.haimosi.hibernate.pojo.TransactionPOJO;
 import com.haimosi.pool.DAOPool;
 import com.haimosi.util.Payment;
 import com.stripe.Stripe;
+import com.stripe.exception.CardException;
 import com.stripe.model.Charge;
 
 public class TestPayment {
@@ -19,17 +20,22 @@ public class TestPayment {
 		HibernateUtil.setConfigPath("hibernate.cfg.xml");
 		Session session = HibernateUtil.beginTransaction();
 		try (TransactionDAO dao = AbstractDAO.borrowFromPool(DAOPool.transactionPool)) {
-			TransactionPOJO trans = dao.get(session, 641);
+			TransactionPOJO trans = dao.get(session, 1);
 			Payment payment = new Payment(trans.getUser().getCreditAccount().getCardNumber(), trans.getUser().getCreditAccount().getExpireDate(),
 			        trans.getUser().getCreditAccount().getCvvNumber(), (int) (trans.getAmount() * 100), "aud", "Pay for Haimosi's goods");
 			Charge charge = payment.doPayment();
 			System.out.println(charge.getStatus());
 		}
-		catch (Throwable e) {
+		catch (CardException e) {
 			e.printStackTrace();
 		}
-		HibernateUtil.closeSession(session);
-		HibernateUtil.releaseFactory();
-		System.exit(0);
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			HibernateUtil.closeSession(session);
+			HibernateUtil.releaseFactory();
+			System.exit(0);
+		}
 	}
 }
