@@ -47,7 +47,7 @@ public enum StatusCode {
 	TIME_OUT(102, "Session timeout"),
 
 	/** The wrong account. */
-	WRONG_ACCOUNT(300, "Wrong account");
+	WRONG_ACCOUNT(300, "Wrong email or password");
 
 	/** The code. */
 	int    code;

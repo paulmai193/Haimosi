@@ -64,14 +64,14 @@ public class ContactParam extends AbstractParam<String> {
 	protected String parse(String param) throws Throwable {
 		if (Pattern.compile(ContactParam.EMAIL_PATTERN).matcher(param).matches()) {
 			this.contactType = ContactParam.CONTACT_EMAIL;
-			return param;
+			return param.toLowerCase();
 		}
 		else if (Pattern.compile(ContactParam.PHONE_PATTERN).matcher(param).matches()) {
 			this.contactType = ContactParam.CONTACT_PHONE;
 			return param;
 		}
 		else {
-			throw new Throwable("Not email format");
+			throw new Throwable("Not email / telephone format");
 		}
 	}
 
