@@ -9,5 +9,8 @@ public class TestEncryptString {
 
 		string = EncryptionUtil.decode(encString, "haimosiv1.0");
 		System.out.println(string);
+
+		String s = "ch_16l8xUBEvZ6wV7rN8ilP9NLX";
+		System.out.println(s.length());
 	}
 }

@@ -86,7 +86,29 @@ public class TransactionPOJO implements Serializable {
 
 	/** The is like. */
 	@JsonKey(key = ParamDefine.TRANSACTION_STATUS_LIKE)
-	boolean                   isLike;
+	private boolean           isLike;
+
+	/** The id charge. */
+	@Column(name = "idcharge", nullable = true, length = 32)
+	private String            idCharge;
+
+	/**
+	 * Gets the id charge.
+	 *
+	 * @return the idCharge
+	 */
+	public String getIdCharge() {
+		return idCharge;
+	}
+
+	/**
+	 * Sets the id charge.
+	 *
+	 * @param idCharge the idCharge to set
+	 */
+	public void setIdCharge(String idCharge) {
+		this.idCharge = idCharge;
+	}
 
 	/**
 	 * Instantiates a new transaction pojo.

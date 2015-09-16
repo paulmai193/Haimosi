@@ -34,6 +34,7 @@ public class Constant {
 	public static final byte   TRANS_WAIT                          = 1;
 	public static final byte   TRANS_DENY                          = 3;
 	public static final byte   TRANS_DONE                          = 2;
+	public static final byte   TRANS_REFUND                        = 4;
 
 	// TRANSACTION FILTER
 	public static final byte   TRANS_FILTER_DAY                    = 1;

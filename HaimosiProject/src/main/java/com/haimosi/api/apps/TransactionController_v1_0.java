@@ -65,6 +65,7 @@ public class TransactionController_v1_0 {
 	/** The logger. */
 	private final Logger            LOGGER         = Logger.getLogger(this.getClass());
 
+	/** The check parameter. */
 	private CheckParameterInterface checkParameter = new ImplCheckParameter();
 
 	/** The http request. */
@@ -97,8 +98,6 @@ public class TransactionController_v1_0 {
 			if (trans != null) {
 				if (trans.getUser().equals(user)) {
 					trans.setMethod(method.getValue());
-					transDAO.update(session, trans);
-					HibernateUtil.commitTransaction(session);
 
 					/* Call payment api if payment method in app, and set payment status */
 					byte status;
@@ -109,6 +108,10 @@ public class TransactionController_v1_0 {
 						try {
 							Charge charge = payment.doPayment();
 							if (charge.getStatus().equals("succeeded")) {
+
+								// Update stripe charge ID to this transaction
+								trans.setIdCharge(charge.getId());
+
 								status = 1;
 
 								jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
@@ -133,6 +136,9 @@ public class TransactionController_v1_0 {
 						status = 1; // Success when payment method is cash
 						jsonResponse.add(ParamDefine.RESULT, StatusCode.SUCCESS.printStatus());
 					}
+
+					transDAO.update(session, trans);
+					HibernateUtil.commitTransaction(session);
 
 					/* Notify to administrator */
 					MessageAcceptTrans message = new MessageAcceptTrans();
@@ -219,7 +225,6 @@ public class TransactionController_v1_0 {
 	 *
 	 * @param idItem the id item
 	 * @param quantity the quantity
-	 * @param method the method
 	 * @return the string
 	 */
 	@POST
@@ -291,6 +296,7 @@ public class TransactionController_v1_0 {
 	 * List of user's transactions.
 	 *
 	 * @param page the page
+	 * @param type the type
 	 * @return the string
 	 */
 	@GET
