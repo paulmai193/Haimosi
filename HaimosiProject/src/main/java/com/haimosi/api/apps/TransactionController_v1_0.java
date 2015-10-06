@@ -244,7 +244,7 @@ public class TransactionController_v1_0 {
 			JsonObject jsonResponse = new JsonObject();
 			ItemPOJO item = itemDAO.get(session, idItem.getValue());
 			if (item != null) {
-				float amount = quantity.getValue() * item.getPrice();
+				float amount = quantity.getValue() * (item.getPrice() / item.getBasicAmount());
 				Date date = new Date();
 				TransactionPOJO trans = new TransactionPOJO(null, user, item, quantity.getValue(), amount, Constant.PAYMENT_UNCHOOSE, date,
 				        Constant.TRANS_WAIT, null, false);
@@ -305,6 +305,9 @@ public class TransactionController_v1_0 {
 	public String list(@QueryParam(ParamDefine.PAGE) IndexParam page, @QueryParam(ParamDefine.TYPE) ByteParam type) {
 		if (page == null) {
 			page = new IndexParam("1");
+		}
+		if (type == null) {
+			type = new ByteParam("1");
 		}
 		UserPOJO user = (UserPOJO) this.httpRequest.getAttribute(ParamDefine.USER);
 		try {

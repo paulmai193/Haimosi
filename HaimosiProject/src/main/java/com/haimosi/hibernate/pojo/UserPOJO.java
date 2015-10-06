@@ -74,7 +74,7 @@ public class UserPOJO implements Serializable {
 
 	/** The likes. */
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "user_like", catalog = "paulmai", joinColumns = { @JoinColumn(name = "iduser", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "idtransaction", nullable = false, updatable = false) })
+	@JoinTable(name = "user_like", catalog = "haimosi", joinColumns = { @JoinColumn(name = "iduser", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "idtransaction", nullable = false, updatable = false) })
 	private Set<TransactionPOJO> likes            = new HashSet<TransactionPOJO>();
 
 	/** The password. */
