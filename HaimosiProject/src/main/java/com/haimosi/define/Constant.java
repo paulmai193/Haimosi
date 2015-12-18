@@ -31,10 +31,10 @@ public class Constant {
 	public static final int    SOCKET_COMMAND_UPDATE_ITEM          = 4;
 
 	// TRANSACTION STATUS
-	public static final byte   TRANS_WAIT                          = 1;
-	public static final byte   TRANS_DENY                          = 3;
-	public static final byte   TRANS_DONE                          = 2;
-	public static final byte   TRANS_REFUND                        = 4;
+	public static final byte   TRANS_STATUS_WAIT                          = 1;
+	public static final byte   TRANS_STATUS_DENY                          = 3;
+	public static final byte   TRANS_STATUS_DONE                          = 2;
+	public static final byte   TRANS_STATUS_REFUND                        = 4;
 
 	// TRANSACTION FILTER
 	public static final byte   TRANS_FILTER_DAY                    = 1;

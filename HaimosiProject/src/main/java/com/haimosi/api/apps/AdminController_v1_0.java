@@ -108,12 +108,12 @@ public class AdminController_v1_0 {
 
 			TransactionPOJO trans = transDAO.get(session, id.getValue());
 			if (trans != null) {
-				if (trans.getStatus() == Constant.TRANS_WAIT) {
+				if (trans.getStatus() == Constant.TRANS_STATUS_WAIT) {
 					if (status.getValue().equals((byte) 1)) {
-						trans.setStatus(Constant.TRANS_DONE);
+						trans.setStatus(Constant.TRANS_STATUS_DONE);
 					}
 					else {
-						trans.setStatus(Constant.TRANS_DENY);
+						trans.setStatus(Constant.TRANS_STATUS_DENY);
 					}
 
 					transDAO.update(session, trans);

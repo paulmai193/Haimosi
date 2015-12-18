@@ -50,7 +50,7 @@ public class StripeEventListenter {
 		try (TransactionDAO transactionDAO = AbstractDAO.borrowFromPool(DAOPool.transactionPool)) {
 			TransactionPOJO transaction = transactionDAO.getByIdCharge(session, idCharge);
 			if (transaction != null) {
-				transaction.setStatus(Constant.TRANS_REFUND);
+				transaction.setStatus(Constant.TRANS_STATUS_REFUND);
 				HibernateUtil.commitTransaction(session);
 			}
 		}

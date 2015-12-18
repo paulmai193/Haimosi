@@ -46,6 +46,7 @@ import com.haimosi.param.IndexParam;
 import com.haimosi.param.IntegerParam;
 import com.haimosi.param.ParamDefine;
 import com.haimosi.pool.DAOPool;
+import com.haimosi.runnable.CheckAcceptTransactionService;
 import com.haimosi.util.Payment;
 import com.haimosi.websocket.data.MessageAcceptTrans;
 import com.haimosi.websocket.data.MessagePushTransaction;
@@ -247,7 +248,7 @@ public class TransactionController_v1_0 {
 				float amount = quantity.getValue() * (item.getPrice() / item.getBasicAmount());
 				Date date = new Date();
 				TransactionPOJO trans = new TransactionPOJO(null, user, item, quantity.getValue(), amount, Constant.PAYMENT_UNCHOOSE, date,
-				        Constant.TRANS_WAIT, null, false);
+				        Constant.TRANS_STATUS_WAIT, null, false);
 				Integer id = transDAO.saveID(session, trans);
 				HibernateUtil.commitTransaction(session);
 
@@ -278,6 +279,9 @@ public class TransactionController_v1_0 {
 				adminRole = null;
 				admins = null;
 
+				// Create thread check after 5 minute this transaction not accept by client, deny it
+				CheckAcceptTransactionService service = new CheckAcceptTransactionService(id);
+				new Thread(service).start();
 			}
 			else {
 				jsonResponse.add(ParamDefine.RESULT, StatusCode.NO_CONTENT.printStatus("Cannot find item with ID " + idItem.getOriginalParam()));
